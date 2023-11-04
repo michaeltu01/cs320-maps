@@ -1,0 +1,5 @@
+{
+  "type": "Location",
+  "coordinates": [125.6, 10.1],
+  "name": "Dinagat Islands"
+}

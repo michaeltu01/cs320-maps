@@ -6,7 +6,8 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
-import edu.brown.cs.student.main.server.handlers.LoadCSVHandler;
+import edu.brown.cs.student.main.server.handlers.csv_handlers.LoadCSVHandler;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;

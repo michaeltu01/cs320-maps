@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.main.server.handlers.LoadCSVHandler;
-import edu.brown.cs.student.main.server.handlers.SearchCSVHandler;
+
+import edu.brown.cs.student.main.server.handlers.csv_handlers.LoadCSVHandler;
+import edu.brown.cs.student.main.server.handlers.csv_handlers.SearchCSVHandler;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;

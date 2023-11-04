@@ -11,7 +11,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import edu.brown.cs.student.main.server.handlers.LoadJsonHandler;
+import edu.brown.cs.student.main.server.exceptions.DatasourceException;
+import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
 
 public class LoadJsonTests {
 
@@ -27,7 +28,7 @@ public class LoadJsonTests {
         Map<String, Object> json1 = new HashMap<>();
         try {
             json1 = loadJsonHandler.parseJson("src/test/java/edu/brown/cs/student/jsons/json1.txt");
-        } catch (IOException e) {
+        } catch (DatasourceException e) {
             fail(e.getMessage());
         }
 
@@ -47,7 +48,7 @@ public class LoadJsonTests {
         Map<String, Object> json1 = new HashMap<>();
         try {
             json1 = loadJsonHandler.parseJson("src/test/java/edu/brown/cs/student/jsons/emptyJson.txt");
-        } catch (IOException e) {
+        } catch (DatasourceException e) {
             fail(e.getMessage());
         }
 
@@ -60,7 +61,7 @@ public class LoadJsonTests {
         Map<String, Object> json1 = new HashMap<>();
         try {
             json1 = loadJsonHandler.parseJson("src/test/java/edu/brown/cs/student/jsons/nestedJson.txt");
-        } catch (IOException e) {
+        } catch (DatasourceException e) {
             fail(e.getMessage());
         }
 

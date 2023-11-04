@@ -6,10 +6,11 @@ import edu.brown.cs.student.main.server.census.ACSAPIDataSource;
 import edu.brown.cs.student.main.server.census.CensusDataSource;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import edu.brown.cs.student.main.server.handlers.BroadbandHandler;
-import edu.brown.cs.student.main.server.handlers.ClearCSVHandler;
-import edu.brown.cs.student.main.server.handlers.LoadCSVHandler;
-import edu.brown.cs.student.main.server.handlers.SearchCSVHandler;
-import edu.brown.cs.student.main.server.handlers.ViewCSVHandler;
+import edu.brown.cs.student.main.server.handlers.csv_handlers.ClearCSVHandler;
+import edu.brown.cs.student.main.server.handlers.csv_handlers.LoadCSVHandler;
+import edu.brown.cs.student.main.server.handlers.csv_handlers.SearchCSVHandler;
+import edu.brown.cs.student.main.server.handlers.csv_handlers.ViewCSVHandler;
+import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
 import spark.Spark;
 
 /**
@@ -44,6 +45,7 @@ public class Server {
     Spark.get("/viewcsv", new ViewCSVHandler(loadCSVHandler));
     Spark.get("/broadband", new BroadbandHandler(state));
     Spark.get("/clearcsv", new ClearCSVHandler(loadCSVHandler));
+    Spark.get("/loadjson", new LoadJsonHandler());
     Spark.init();
     Spark.awaitInitialization();
   }

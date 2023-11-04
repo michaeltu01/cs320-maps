@@ -24,12 +24,12 @@ public class ACSAPIDataSourceTests {
     String state = "California";
     String county = "Los Angeles County";
 
-    assertEquals(new CensusData(89.9), source.getBroadbandPct(state, county));
+    assertEquals(89.9, source.getBroadbandPct(state, county).broadbandPct());
 
     state = "Virginia";
     county = "Virginia Beach City";
 
-    assertEquals(new CensusData(92.0), source.getBroadbandPct(state, county));
+    assertEquals(92.0, source.getBroadbandPct(state, county).broadbandPct());
   }
 
   /**

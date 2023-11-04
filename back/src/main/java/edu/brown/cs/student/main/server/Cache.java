@@ -1,50 +1,91 @@
 package edu.brown.cs.student.main.server;
 
+import edu.brown.cs.student.main.server.exceptions.BadJsonException;
+import edu.brown.cs.student.main.server.exceptions.DatasourceException;
+import edu.brown.cs.student.main.server.census.CensusData;
+import edu.brown.cs.student.main.server.census.CensusDataSource;
+
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
-import edu.brown.cs.student.main.server.census.CensusData;
-import edu.brown.cs.student.main.server.census.CensusDataSource;
-import edu.brown.cs.student.main.server.exceptions.BadRequestException;
-import edu.brown.cs.student.main.server.exceptions.DatasourceException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Cache class which is designed to store API requests to the external API so that repeated
- * requests do not have to be made unnecessarily.
+ * This is the CacheAPI class which effictevely caches the response from getBroadbandPercentage, so
+ * as to reduce the amount of API calls especially if a specific call has been made before.
  */
 public class Cache {
-  private final LoadingCache<String, CensusData> cache;
-  private final CensusDataSource dataSource;
+  private final LoadingCache<ArrayList<String>, CensusData> cache;
+  private final CensusDataSource censusDataSource;
+
+  public Cache(int maximumSize, int minutesExpire, CensusDataSource censusDataSource) {
+    this.censusDataSource = censusDataSource;
+
+    // Look at the docs -- there are lots of builder parameters you can use
+    //   including ones that affect garbage-collection (not needed for Server).
+    this.cache =
+        CacheBuilder.newBuilder()
+            // How many entries maximum in the cache?
+            .maximumSize(maximumSize)
+            // How long should entries remain in the cache?
+            .expireAfterWrite(minutesExpire, TimeUnit.MINUTES)
+            // Keep statistical info around for profiling purposes
+            .recordStats()
+            .build(
+                new CacheLoader<>() {
+
+                  /**
+                   * This is the load method, if a key does not exist inside of the cache, fill it
+                   * in with the get broadbandPercentage If getBroadbandPercentage throws an error,
+                   * propagate it back up.
+                   *
+                   * @param key (formatted as (state, county))
+                   * @return
+                   * @throws DatasourceException
+                   * @throws BadJSONException
+                   */
+                  @Override
+                  public CensusData load(ArrayList<String> key)
+                      throws DatasourceException, BadJsonException {
+                    // the key is formatted as (state, county)
+                    return censusDataSource.getBroadbandPct(key.get(0), key.get(1));
+                    // the result is formated as , the (broadband percentage, the retrieval time)
+                  }
+                });
+  }
 
   /**
-   * Cache constructor which launches the cache.
-   * @param dataSource
+   * this is the search method for the cache, which effectively calls load if the value doesn't
+   * exist which then calls getBroadbandPercentage on the acsDataSource
+   *
+   * @param stateName
+   * @param countyName
+   * @return
+   * @throws DatasourceException
+   * @throws BadJSONException
    */
-  public Cache(CensusDataSource dataSource) {
-    this.dataSource = dataSource;
-    this.cache = CacheBuilder.newBuilder()
-        // How many entries maximum in the cache?
-        .maximumSize(10)
-        // How long should entries remain in the cache?
-        .expireAfterWrite(1, TimeUnit.MINUTES)
-        // Keep statistical info around for profiling purposes
-        .recordStats()
-        .build(
-            // Strategy pattern: how should the cache behave when
-            // it's asked for something it doesn't have?
-            new CacheLoader<>() {
-              @Override
-              public CensusData load(String key) throws DatasourceException, BadRequestException {
-                // key should be formatted in the form: "[county]. [state]" (ex. Los Angeles County, California)
-                String[] splitKey = key.split(", ");
-                String county = splitKey[0];
-                String state = splitKey[1];
-                System.out.println("called load for: "+key);
-                // If this isn't yet present in the cache, load it:
-                return null;
-              }
-            });
+  public CensusData search(String stateName, String countyName)
+      throws DatasourceException, BadJsonException {
+    // "get" is designed for concurrent situations; for today, use getUnchecked:
+    ArrayList<String> inputArr = new ArrayList<>();
+    inputArr.add(stateName);
+    inputArr.add(countyName);
+
+    try {
+      return this.cache.getUnchecked(inputArr);
+    } catch (Exception e) {
+      // used instance of to check what kind of exception was thrown, and then more formally
+      // throw the datasource or badjson exception, to be handled in BroadbandHandler to put the
+      // necessary responses in the response map.
+      if (e.getCause() instanceof DatasourceException) {
+        throw new DatasourceException(e.getMessage(), e.getCause());
+      }
+      if (e.getCause() instanceof BadJsonException) {
+        throw new BadJsonException(e.getMessage(), e.getCause());
+      }
+    }
+    // this should never be thrown as Datasource and BadJSON are caught above.
+    throw new DatasourceException("Error while searching");
   }
 }

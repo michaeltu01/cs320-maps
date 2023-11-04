@@ -1,5 +1,6 @@
 package edu.brown.cs.student.main.server.handlers;
 
+import edu.brown.cs.student.main.server.Cache;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -23,6 +24,7 @@ import spark.Route;
 public class BroadbandHandler implements Route {
 
   private final CensusDataSource state;
+  private static Cache cache;
 
   /**
    * Constructor which stores an object of the CensusDataSource.
@@ -30,6 +32,8 @@ public class BroadbandHandler implements Route {
    */
   public BroadbandHandler(CensusDataSource state){
     this.state = state;
+    this.cache = new Cache(10, 10, this.state);
+
   }
 
   /**
@@ -59,10 +63,11 @@ public class BroadbandHandler implements Route {
       if (county == null) {
         throw new BadRequestException("'county' parameter missing");
       }
-      CensusData data = this.state.getBroadbandPct(state, county);
+      CensusData data = this.cache.search(state, county);
+
       responseMap.put("type", "success");
       responseMap.put("broadband", data.broadbandPct());
-      responseMap.put("date/time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
+      responseMap.put("date/time", data.dateTime());
       responseMap.put("county/state", county + ", " + state);
       return adapter.toJson(responseMap);
     } catch (DatasourceException e) {

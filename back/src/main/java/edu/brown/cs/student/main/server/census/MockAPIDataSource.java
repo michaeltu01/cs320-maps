@@ -1,5 +1,7 @@
 package edu.brown.cs.student.main.server.census;
 
+import java.time.LocalDateTime;
+
 import edu.brown.cs.student.main.server.exceptions.BadJsonException;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 
@@ -19,6 +21,6 @@ public class MockAPIDataSource implements CensusDataSource {
   @Override
   public CensusData getBroadbandPct(String state, String county)
       throws DatasourceException, BadJsonException {
-    return new CensusData(46.7);
+    return new CensusData(46.7, "");
   }
 }

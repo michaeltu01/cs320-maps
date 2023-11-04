@@ -10,6 +10,8 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,8 +143,8 @@ public class ACSAPIDataSource implements CensusDataSource {
         throw new DatasourceException("Malformed response from ACS");
       // body should be 2 rows (header + result)
       List<String> result = body.get(1);
-      // System.out.println("broadbandPct: " + Double.parseDouble((result.get(1))));
-      return new CensusData(Double.parseDouble((result.get(1))));
+      String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
+      return new CensusData(Double.parseDouble((result.get(1))), dateTime);
     } catch(IOException e) {
       throw new DatasourceException(e.getMessage());
     }

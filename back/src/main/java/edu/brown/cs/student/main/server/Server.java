@@ -2,6 +2,11 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import edu.brown.cs.student.main.server.census.ACSAPIDataSource;
 import edu.brown.cs.student.main.server.census.CensusDataSource;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
@@ -21,6 +26,19 @@ public class Server {
 
   static final int port = 3232;
   private final CensusDataSource state;
+
+  private static Map<String, Object> sharedJson = new HashMap<String, Object>();
+
+    public static Map<String, Object> getSharedJson() {
+    return Collections.unmodifiableMap(sharedJson); // Return the sharedjson variable
+  }
+
+  public static void setSharedJson(Map<String, Object> json) {
+    sharedJson = json;
+
+    
+    //System.out.println(sharedJson.get("features").keySet());
+  }
 
   /**
    * Server constructor which sets up the port as well as each of our handlers. LoadCSVHandler
@@ -57,6 +75,8 @@ public class Server {
     Spark.unmap("/viewcsv");
     Spark.unmap("/broadband");
     Spark.unmap("/clearcsv");
+    Spark.unmap("/loadjson");
+    
 
     Spark.awaitStop(); // don't proceed until the server is stopped
   }

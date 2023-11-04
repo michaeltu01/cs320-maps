@@ -14,6 +14,7 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
+import edu.brown.cs.student.main.server.Server;
 import edu.brown.cs.student.main.server.exceptions.BadRequestException;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import okio.Buffer;
@@ -22,8 +23,6 @@ import spark.Response;
 import spark.Route;
 
 public class LoadJsonHandler implements Route{
-
-    private Map<String, Object> loadedJson;
 
     @Override
     public Object handle(Request request, Response response) {
@@ -37,13 +36,14 @@ public class LoadJsonHandler implements Route{
         try {
             if (filepath == null) {
                 filepath = "back/data/geodata/fullDownload.json";
-                this.loadedJson = parseJson(filepath);
+                Server.setSharedJson(parseJson(filepath));
             } else {
-                this.loadedJson = parseJson(filepath);
+                Server.setSharedJson(parseJson(filepath));
             }
             responseMap.put("type", "success");
             responseMap.put("filepath", filepath);
             responseMap.put("details", "file loaded successfully");
+            //System.out.println(Server.getSharedJson());
             return adapter.toJson(responseMap);
         } /*catch (BadRequestException e) {
             responseMap.put("type", "error");

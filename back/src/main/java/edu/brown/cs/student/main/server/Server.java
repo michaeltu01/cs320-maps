@@ -2,10 +2,14 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.squareup.moshi.Types;
+import java.lang.reflect.Type;
 
 import edu.brown.cs.student.main.server.census.ACSAPIDataSource;
 import edu.brown.cs.student.main.server.census.CensusDataSource;
@@ -26,17 +30,17 @@ public class Server {
 
   static final int port = 3232;
   private final CensusDataSource state;
-
+  
   private static Map<String, Object> sharedJson = new HashMap<String, Object>();
 
-    public static Map<String, Object> getSharedJson() {
+  public static Map<String, Object> getSharedJson() {
     return Collections.unmodifiableMap(sharedJson); // Return the sharedjson variable
   }
 
   public static void setSharedJson(Map<String, Object> json) {
     sharedJson = json;
 
-    
+    // Type featureCollection = Types.newParameterizedType(ArrayList.class, Map.class, String.class, Object.class);
     //System.out.println(sharedJson.get("features").keySet());
   }
 

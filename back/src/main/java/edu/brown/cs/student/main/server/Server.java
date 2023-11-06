@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import java.lang.reflect.Type;
 
@@ -19,7 +21,9 @@ import edu.brown.cs.student.main.server.handlers.csv_handlers.ClearCSVHandler;
 import edu.brown.cs.student.main.server.handlers.csv_handlers.LoadCSVHandler;
 import edu.brown.cs.student.main.server.handlers.csv_handlers.SearchCSVHandler;
 import edu.brown.cs.student.main.server.handlers.csv_handlers.ViewCSVHandler;
+import edu.brown.cs.student.main.server.handlers.json_handlers.FilterJsonHandler;
 import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
+import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import spark.Spark;
 
 /**
@@ -30,14 +34,14 @@ public class Server {
 
   static final int port = 3232;
   private final CensusDataSource state;
-  
-  private static Map<String, Object> sharedJson = new HashMap<String, Object>();
 
-  public static Map<String, Object> getSharedJson() {
-    return Collections.unmodifiableMap(sharedJson); // Return the sharedjson variable
+  private static FeatureCollection sharedJson = new FeatureCollection(null, null);
+
+  public static FeatureCollection getSharedJson() {
+    return sharedJson; // Return the sharedjson variable
   }
 
-  public static void setSharedJson(Map<String, Object> json) {
+  public static void setSharedJson(FeatureCollection json) {
     sharedJson = json;
 
     // Type featureCollection = Types.newParameterizedType(ArrayList.class, Map.class, String.class, Object.class);
@@ -68,6 +72,7 @@ public class Server {
     Spark.get("/broadband", new BroadbandHandler(state));
     Spark.get("/clearcsv", new ClearCSVHandler(loadCSVHandler));
     Spark.get("/loadjson", new LoadJsonHandler());
+    Spark.get("/filterjson", new FilterJsonHandler());
     Spark.init();
     Spark.awaitInitialization();
   }
@@ -80,8 +85,7 @@ public class Server {
     Spark.unmap("/broadband");
     Spark.unmap("/clearcsv");
     Spark.unmap("/loadjson");
-    
-
+    Spark.unmap("/filterjson");
     Spark.awaitStop(); // don't proceed until the server is stopped
   }
 

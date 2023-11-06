@@ -24,7 +24,7 @@ import spark.Route;
 public class BroadbandHandler implements Route {
 
   private final CensusDataSource state;
-  private static Cache cache;
+  private Cache cache;
 
   /**
    * Constructor which stores an object of the CensusDataSource.

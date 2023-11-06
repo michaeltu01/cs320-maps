@@ -53,6 +53,7 @@ public class FilterJsonHandler implements Route{
         try {
             // Check for null parameters
             ArrayList<Double> params = new ArrayList<Double>(List.of(minLong, minLat, maxLong, maxLat));
+            System.out.println("params: " + params.toString());
             boolean allParamsNonNull = params.stream().allMatch(param -> param != null);
             if (!allParamsNonNull) {
                 throw new BadRequestException("You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
@@ -60,8 +61,10 @@ public class FilterJsonHandler implements Route{
 
             // Filter JSON for areas with coordinates that all fall within the specified "boundary box"
             FeatureCollection json = Server.getSharedJson();
+            System.out.println(json);
             BoundaryBox bbox = new BoundaryBox(minLong, minLat, maxLong, maxLat);
             FeatureCollection filteredJson = filterByBoundaryBox(json, bbox);
+            System.out.println(filteredJson);
 
             responseMap.put("type", "success");
             responseMap.put("geojson", filteredJson);
@@ -83,6 +86,9 @@ public class FilterJsonHandler implements Route{
         ArrayList<Feature> filteredFeatures = new ArrayList<Feature>();
 
         List<Feature> featureCollection = json.featureCollection();
+        if (featureCollection == null) {
+            throw new DatasourceException("Feature collection is null.");
+        }
         for (Feature feature : featureCollection) {
             List<List<List<List<Double>>>> coordinatesProperty = feature.area().coordinates();
             if (coordinatesProperty.size() != 1 && coordinatesProperty.get(0).size() != 1) {

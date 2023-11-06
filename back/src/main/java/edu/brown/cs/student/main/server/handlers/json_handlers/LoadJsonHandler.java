@@ -27,6 +27,8 @@ import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import edu.brown.cs.student.main.server.json_classes.Feature;
 import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import okio.Buffer;
+import okio.BufferedSource;
+import okio.Okio;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -69,49 +71,48 @@ public class LoadJsonHandler implements Route{
 
     public FeatureCollection parseJson(String filePath) throws DatasourceException {
         System.out.println("entered parseJson");
-        Moshi moshi;
+        Moshi moshi = new Moshi.Builder().build();
         try {
-            moshi = new Moshi.Builder().build();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             throw e;
         }
         System.out.println("making adapter");
-        JsonAdapter<FeatureCollection> adapter;
+        JsonAdapter<FeatureCollection> adapter = moshi.adapter(FeatureCollection.class);
         try {
-            adapter = moshi.adapter(FeatureCollection.class);
-            JsonAdapter<List<Feature>> featureAdapter = moshi.adapter(
-                Types.newParameterizedType(List.class, Feature.class));
-            JsonAdapter<Geometry> geometryAdapter = moshi.adapter(Geometry.class);
-            JsonAdapter<FeatureProperties> featurePropertiesAdapter = moshi.adapter(
-                FeatureProperties.class);
-            JsonAdapter<Map<String, String>> areaDescriptionAdapter = moshi.adapter(
-                Types.newParameterizedType(Map.class, String.class, String.class));
-            JsonAdapter<List<List<List<List<Double>>>>> coordinatesAdapter = moshi.adapter(Types.newParameterizedType(List.class, List.class, List.class, List.class, Double.class));
+            // JsonAdapter<List<Feature>> featureAdapter = moshi.adapter(
+            //     Types.newParameterizedType(List.class, Feature.class));
+            // JsonAdapter<Geometry> geometryAdapter = moshi.adapter(Geometry.class);
+            // JsonAdapter<FeatureProperties> featurePropertiesAdapter = moshi.adapter(
+            //     FeatureProperties.class);
+            // JsonAdapter<Map<String, String>> areaDescriptionAdapter = moshi.adapter(
+            //     Types.newParameterizedType(Map.class, String.class, String.class));
+            // JsonAdapter<List<List<List<List<Double>>>>> coordinatesAdapter = moshi.adapter(Types.newParameterizedType(List.class, List.class, List.class, List.class, Double.class));
         } catch (Exception e) {
             System.err.println(e.getMessage());
             throw e;
         }
         System.out.println("making a feature collection");
-        FeatureCollection json;
+        FeatureCollection json = null;
         System.out.println("try....");
-        try (Buffer buff = new Buffer()) {
-            System.out.println("parsing...");
-            json = adapter.fromJson(buff.readFrom(new FileInputStream(new File(filePath))));
+        try {
+            BufferedSource source = Okio.buffer(Okio.source(new File(filePath)));
+            // System.out.println("parsing...");
+            json = adapter.fromJson(source);
+            source.close();
         } catch (IOException e) {
-            System.out.println("catching...");
+            // System.out.println("catching...");
             throw new DatasourceException(e.getMessage(), e.getCause());
         } catch (JsonDataException e) {
             System.err.println(e.getMessage());
             throw e;
         }
 
-        // // Throw an exception instead of returning a FeatureCollection with null values
-        // if (json.type() == null && json.featureCollection() == null) {
-        //     throw new DatasourceException("Parsed json was empty");
-        // }
+        if (json == null || json.featureCollection() == null || json.type() == null) {
+            throw new DatasourceException("JSON (or one of its fields) parsed to null");
+        }
 
-        System.out.println(json.featureCollection());
+        System.out.println(json);
         return json;
     }
     

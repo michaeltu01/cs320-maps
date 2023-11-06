@@ -35,7 +35,7 @@ public class Server {
   static final int port = 3232;
   private final CensusDataSource state;
 
-  private static FeatureCollection sharedJson = new FeatureCollection(null, null);
+  private static FeatureCollection sharedJson;
 
   public static FeatureCollection getSharedJson() {
     return sharedJson; // Return the sharedjson variable

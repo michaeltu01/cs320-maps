@@ -108,9 +108,9 @@ public class LoadJsonHandler implements Route{
             throw e;
         }
 
-        if (json == null || json.featureCollection() == null || json.type() == null) {
-            throw new DatasourceException("JSON (or one of its fields) parsed to null");
-        }
+        // if (json == null || json.featureCollection() == null || json.type() == null) {
+        //     throw new DatasourceException("JSON (or one of its fields) parsed to null");
+        // }
 
         System.out.println(json);
         return json;

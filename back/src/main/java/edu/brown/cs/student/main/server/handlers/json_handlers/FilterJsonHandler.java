@@ -85,16 +85,16 @@ public class FilterJsonHandler implements Route{
     private FeatureCollection filterByBoundaryBox(FeatureCollection json, BoundaryBox bbox) throws DatasourceException {
         ArrayList<Feature> filteredFeatures = new ArrayList<Feature>();
 
-        List<Feature> featureCollection = json.featureCollection();
+        List<Feature> featureCollection = json.features();
         if (featureCollection == null) {
             throw new DatasourceException("Feature collection is null.");
         }
         for (Feature feature : featureCollection) {
-            List<List<List<List<Double>>>> coordinatesProperty = feature.area().coordinates();
+            List<List<List<List<Double>>>> coordinatesProperty = feature.geometry().coordinates();
             if (coordinatesProperty.size() != 1 && coordinatesProperty.get(0).size() != 1) {
                 throw new DatasourceException("Cannot parse GeoJSON: invalid structure of feature coordinates");
             }
-            List<List<Double>> coordinatesList = feature.area().coordinates().get(0).get(0);
+            List<List<Double>> coordinatesList = feature.geometry().coordinates().get(0).get(0);
             if (allLieInBoundaryBox(coordinatesList, bbox)) {
                 filteredFeatures.add(feature);
             }

@@ -14,7 +14,23 @@ function WrappedMap() {
 
   const mapRef = useRef<MapRef>(null)
 
-    function onMapClick(e: MapLayerMouseEvent) {
+    const [viewState, setViewState] = useState({
+        longitude: -71.418884,
+        latitude: 41.825226,
+        zoom: 10,
+    });
+
+    const [overlay, setOverlay] = useState<GeoJSON.FeatureCollection | undefined>(undefined);
+    // const [logs, setLogs] = useState<string[]>([]); // To store the console logs
+    const [lastLog, setLastLog] = useState<string>(""); // To store and display the last console log
+
+
+    useEffect(() => {
+      setOverlay(overlayData());
+    }, []);
+
+
+        function onMapClick(e: MapLayerMouseEvent) {
         console.log(e.lngLat.lat);
         console.log(e.lngLat.lng);
 
@@ -33,27 +49,26 @@ function WrappedMap() {
         }
         else {
           const features = map.queryRenderedFeatures(bbox);
-          console.log('Clicked features:', features);
+          const click_feature = features[0];
+          const properties = click_feature.properties;
+          const logEntry = `state: ${properties.state}, city: ${properties.city}, holc_grade: ${properties.holc_grade}`;
+
+          console.log(logEntry);
+          setLastLog(logEntry);
+
+          // console.log("state " + properties.state)
+          // console.log("city " + properties.city)
+          // console.log("holc_grade " + properties.holc_grade)
+
+          // setLogs((prevLogs) => [...prevLogs, `state: ${properties.state}`, `city: ${properties.city}`, `holc_grade: ${properties.holc_grade}`]);
+
         }
         
       };
 
-
-    const [viewState, setViewState] = useState({
-        longitude: -71.418884,
-        latitude: 41.825226,
-        zoom: 10,
-    });
-
-
-    const [overlay, setOverlay] = useState<GeoJSON.FeatureCollection | undefined>(undefined);
-
-
-    useEffect(() => {
-      setOverlay(overlayData());
-    }, []);
-    
   return (
+    <div>
+
     <Map
     
         mapboxAccessToken = {ACCESS_TOKEN}
@@ -69,6 +84,12 @@ function WrappedMap() {
       </Source>
 
     </Map>
+
+    <div className="logs">
+      <h2>Click</h2>
+      <pre>{lastLog}</pre>
+    </div>
+    </div>
     )
 }
 

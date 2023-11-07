@@ -12,3 +12,15 @@
   font-size: calc(1px + 2vmin);
   color: white;
 }
+
+/* Add this to your CSS or style file */
+.logs {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+}

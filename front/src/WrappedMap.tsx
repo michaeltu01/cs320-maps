@@ -12,7 +12,7 @@ import { useRef } from "react";
 
 function WrappedMap() {
 
-  const mapRef = useRef<MapRef | null>(null); // Define the type as MapRef or null
+  const mapRef = useRef(null); // Create a useRef to access the Map component
 
     function onMapClick(e: MapLayerMouseEvent) {
         console.log(e.lngLat.lat);
@@ -28,13 +28,12 @@ function WrappedMap() {
         ];
 
         // Use the mapRef to call queryRenderedFeatures
-        const features = map.queryRenderedFeatures(bbox);
+        // const features = map.queryRenderedFeatures(bbox);
 
         // Now you can work with the features, for example, log them to the console
-        console.log('Clicked features:', features);
+        // console.log('Clicked features:', features);
       };
 
-    }
 
     const [viewState, setViewState] = useState({
         longitude: -71.418884,

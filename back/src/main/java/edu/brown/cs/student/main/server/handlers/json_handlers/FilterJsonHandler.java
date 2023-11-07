@@ -53,7 +53,6 @@ public class FilterJsonHandler implements Route{
         try {
             // Check for null parameters
             ArrayList<Double> params = new ArrayList<Double>(List.of(minLong, minLat, maxLong, maxLat));
-            System.out.println("params: " + params.toString());
             boolean allParamsNonNull = params.stream().allMatch(param -> param != null);
             if (!allParamsNonNull) {
                 throw new BadRequestException("You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
@@ -61,10 +60,8 @@ public class FilterJsonHandler implements Route{
 
             // Filter JSON for areas with coordinates that all fall within the specified "boundary box"
             FeatureCollection json = Server.getSharedJson();
-            System.out.println(json);
             BoundaryBox bbox = new BoundaryBox(minLong, minLat, maxLong, maxLat);
             FeatureCollection filteredJson = filterByBoundaryBox(json, bbox);
-            System.out.println(filteredJson);
 
             responseMap.put("type", "success");
             responseMap.put("geojson", filteredJson);
@@ -89,23 +86,32 @@ public class FilterJsonHandler implements Route{
         if (featureCollection == null) {
             throw new DatasourceException("Feature collection is null.");
         }
-        for (Feature feature : featureCollection) {
-            List<List<List<List<Double>>>> coordinatesProperty = feature.geometry().coordinates();
-            if (coordinatesProperty.size() != 1 && coordinatesProperty.get(0).size() != 1) {
-                throw new DatasourceException("Cannot parse GeoJSON: invalid structure of feature coordinates");
+        try {
+            for (Feature feature : featureCollection) {
+                if (feature.geometry() != null) {
+                    List<List<List<List<Double>>>> coordinatesProperty = feature.geometry().coordinates();
+                    if (coordinatesProperty != null) {
+                        if (allLieInBoundaryBox(coordinatesProperty, bbox)) {
+                            filteredFeatures.add(feature);
+                        }
+                    }
+                }
             }
-            List<List<Double>> coordinatesList = feature.geometry().coordinates().get(0).get(0);
-            if (allLieInBoundaryBox(coordinatesList, bbox)) {
-                filteredFeatures.add(feature);
-            }
+            return new FeatureCollection(json.type(), filteredFeatures);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            throw e;
         }
-        return new FeatureCollection(json.type(), filteredFeatures);
     }
 
-    private boolean allLieInBoundaryBox(List<List<Double>> coordinates, BoundaryBox bbox) {
-        for (List<Double> coordinate : coordinates) {
-            if (!bbox.contains(coordinate)) {
-                return false;
+    private boolean allLieInBoundaryBox(List<List<List<List<Double>>>> coordinatesList4D, BoundaryBox bbox) {
+        for (List<List<List<Double>>> coordinatesList3D : coordinatesList4D) {
+            for (List<List<Double>> coordinatesList2D : coordinatesList3D) {
+                for (List<Double> coordinate : coordinatesList2D) {
+                    if (!bbox.contains(coordinate)) {
+                        return false;
+                    }
+                }
             }
         }
         return true;

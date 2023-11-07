@@ -8,12 +8,32 @@ import { FeatureCollection } from "geojson";
 import { useEffect } from "react";
 import { overlayData } from "./overlays";
 import { geoLayer } from "./overlays";
+import { useRef } from "react";
 
 function WrappedMap() {
+
+  const mapRef = useRef<MapRef | null>(null); // Define the type as MapRef or null
 
     function onMapClick(e: MapLayerMouseEvent) {
         console.log(e.lngLat.lat);
         console.log(e.lngLat.lng);
+
+        // Access the Mapbox component using mapRef
+        const map = mapRef.current;
+
+        // Create a bounding box around the click point
+        const bbox = [
+          [e.point.x - 5, e.point.y - 5], 
+          [e.point.x + 5, e.point.y + 5] 
+        ];
+
+        // Use the mapRef to call queryRenderedFeatures
+        const features = map.queryRenderedFeatures(bbox);
+
+        // Now you can work with the features, for example, log them to the console
+        console.log('Clicked features:', features);
+      };
+
     }
 
     const [viewState, setViewState] = useState({

@@ -43,9 +43,6 @@ public class Server {
 
   public static void setSharedJson(FeatureCollection json) {
     sharedJson = json;
-
-    // Type featureCollection = Types.newParameterizedType(ArrayList.class, Map.class, String.class, Object.class);
-    //System.out.println(sharedJson.get("features").keySet());
   }
 
   /**

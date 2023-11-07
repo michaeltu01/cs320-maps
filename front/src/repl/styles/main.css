@@ -1,0 +1,60 @@
+/*
+  This is a reasonable starting point for the CSS in Mock.
+  Positioning in CSS can sometimes be annoying to manage, so we've opted to 
+  give you this starter CSS. Feel free to modify it as you wish, though.
+*/
+html {
+  font-size: calc(5px + 1vw);
+}
+
+.repl {
+  position: relative;
+  width: 100%;
+}
+
+.repl-history {
+  height: 55vh;
+  margin: auto;
+  display: block;
+  overflow: scroll;
+  padding-top: 10px;
+}
+
+.repl-input {
+  margin: auto;
+  height: 10vh;
+}
+
+.repl-command-box {
+  width: 95%;
+  margin: auto;
+  display: block;
+}
+
+.command {
+  margin: auto;
+}
+
+button {
+  margin: auto;
+  display: block;
+}
+
+/*Table Style */
+table {
+  padding: 5px;
+  margin: auto;
+  width: 100%;
+}
+
+td {
+  border: 2px solid #ffffff;
+  background-color: rgb(216, 197, 251);
+  padding: 5px;
+  height: 5vh;
+}
+
+input {
+  height: 5vh;
+  font-size: calc(5px + 1vw);
+}

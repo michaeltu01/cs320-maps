@@ -28,7 +28,7 @@ public class FilterJsonHandler implements Route{
     
     public FilterJsonHandler() {
         this.json = Server.getSharedJson();
-        this.cache = new BBoxCache(10, 10, Server.getSharedJson());
+        this.cache = new BBoxCache(10, 10);
     }
 
     @Override

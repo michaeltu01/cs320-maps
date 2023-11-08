@@ -15,11 +15,11 @@ import java.util.concurrent.TimeUnit;
  * This is the CacheAPI class which effictevely caches the response from getBroadbandPercentage, so
  * as to reduce the amount of API calls especially if a specific call has been made before.
  */
-public class Cache {
+public class BroadbandCache {
   private final LoadingCache<ArrayList<String>, CensusData> cache;
   private final CensusDataSource censusDataSource;
 
-  public Cache(int maximumSize, int minutesExpire, CensusDataSource censusDataSource) {
+  public BroadbandCache(int maximumSize, int minutesExpire, CensusDataSource censusDataSource) {
     this.censusDataSource = censusDataSource;
 
     // Look at the docs -- there are lots of builder parameters you can use

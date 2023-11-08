@@ -1,6 +1,6 @@
 package edu.brown.cs.student.main.server.handlers;
 
-import edu.brown.cs.student.main.server.Cache;
+import edu.brown.cs.student.main.server.BroadbandCache;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -24,7 +24,7 @@ import spark.Route;
 public class BroadbandHandler implements Route {
 
   private final CensusDataSource state;
-  private Cache cache;
+  private BroadbandCache cache;
 
   /**
    * Constructor which stores an object of the CensusDataSource.
@@ -32,7 +32,7 @@ public class BroadbandHandler implements Route {
    */
   public BroadbandHandler(CensusDataSource state){
     this.state = state;
-    this.cache = new Cache(10, 10, this.state);
+    this.cache = new BroadbandCache(10, 10, this.state);
 
   }
 

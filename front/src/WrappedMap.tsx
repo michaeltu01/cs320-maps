@@ -1,7 +1,8 @@
 import Map, { Layer, MapLayerMouseEvent, Point, PointLike, Source, ViewStateChangeEvent} from "react-map-gl";
+
 import "mapbox-gl/dist/mapbox-gl.css";
 import React from "react";
-import { ACCESS_TOKEN } from "./private/api";
+import { ACCESS_TOKEN } from "./private/key";
 import { useState } from "react";
 import { FillLayer, MapRef } from "react-map-gl";
 import { FeatureCollection } from "geojson";
@@ -11,14 +12,28 @@ import { geoLayer } from "./overlays";
 import { useRef } from "react";
 
 function WrappedMap() {
+  function onMapClick(e: MapLayerMouseEvent) {
+    console.log(e.lngLat.lat);
+    console.log(e.lngLat.lng);
+  }
+
+
+  const [viewState, setViewState] = useState({
+    longitude: -71.418884,
+    latitude: 41.825226,
+    zoom: 10,
+  });
 
   const mapRef = useRef<MapRef>(null)
 
-    const [viewState, setViewState] = useState({
-        longitude: -71.418884,
-        latitude: 41.825226,
-        zoom: 10,
-    });
+  const [overlay, setOverlay] = useState<GeoJSON.FeatureCollection | undefined>(
+    undefined
+  );
+
+
+  useEffect(() => {
+    setOverlay(overlayData());
+  }, []);
 
     const [overlay, setOverlay] = useState<GeoJSON.FeatureCollection | undefined>(undefined);
     // const [logs, setLogs] = useState<string[]>([]); // To store the console logs
@@ -81,20 +96,21 @@ function WrappedMap() {
     <div>
 
     <Map
-    
-        mapboxAccessToken = {ACCESS_TOKEN}
-        {...viewState}
-        onMove={(ev: ViewStateChangeEvent) => setViewState(ev.viewState)}
-        style={{ width: window.innerWidth, height: window.innerHeight }}
-        mapStyle={"mapbox://styles/mapbox/streets-v12"}
-        onClick={(ev: MapLayerMouseEvent) => onMapClick(ev)}
-        ref={mapRef}
-        >
-        <Source id="geo_data" type="geojson" data={overlay}>
+
+      mapboxAccessToken={ACCESS_TOKEN}
+      {...viewState}
+      onMove={(ev: ViewStateChangeEvent) => setViewState(ev.viewState)}
+      style={{ width: "100%", height: "100%" }}
+      mapStyle={"mapbox://styles/mapbox/streets-v12"}
+      onClick={(ev: MapLayerMouseEvent) => onMapClick(ev)}
+      ref={mapRef}
+    >
+      <Source id="geo_data" type="geojson" data={overlay}>
         <Layer {...geoLayer} />
       </Source>
-
     </Map>
+  );
+
 
     <div className="logs">
       <h2>Click</h2>
@@ -104,4 +120,4 @@ function WrappedMap() {
     )
 }
 
-export default WrappedMap
+export default WrappedMap;

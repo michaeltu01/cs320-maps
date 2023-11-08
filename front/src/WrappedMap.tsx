@@ -51,10 +51,21 @@ function WrappedMap() {
           const features = map.queryRenderedFeatures(bbox);
           const click_feature = features[0];
           const properties = click_feature.properties;
-          const logEntry = `state: ${properties.state}, city: ${properties.city}, holc_grade: ${properties.holc_grade}`;
 
-          console.log(logEntry);
-          setLastLog(logEntry);
+          if (properties === null) {
+            console.log("properties are null")
+          }
+          else if (properties.city === undefined && properties.state === undefined && properties.name === undefined && properties.holc_grade === undefined) {
+            setLastLog("No data defined in click region. Try again")
+          }
+          else {
+            const logEntry = `state: ${properties.state}, city: ${properties.city}, holc_grade: ${properties.holc_grade} \n name: ${properties.name}`;
+            console.log(logEntry);
+            setLastLog(logEntry);
+          }
+
+
+
 
           // console.log("state " + properties.state)
           // console.log("city " + properties.city)

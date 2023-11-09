@@ -14,10 +14,15 @@ import { FillLayer, MapRef } from "react-map-gl";
 import { FeatureCollection } from "geojson";
 import { useEffect } from "react";
 import { overlayData } from "./overlays";
-import { geoLayer } from "./overlays";
+import { geoLayer, filterLayer } from "./overlays";
 import { useRef } from "react";
+import { filterOverlay } from "./geodata/mockVariables";
 
-function WrappedMap() {
+interface WrappedMapProps {
+  filterOverlay: GeoJSON.FeatureCollection | undefined;
+}
+
+function WrappedMap(props: WrappedMapProps) {
   const mapRef = useRef<MapRef>(null);
 
   const [viewState, setViewState] = useState({
@@ -94,6 +99,9 @@ function WrappedMap() {
       >
         <Source id="geo_data" type="geojson" data={overlay}>
           <Layer {...geoLayer} />
+        </Source>
+        <Source id="filtered_data" type="geojson" data={props.filterOverlay}>
+          <Layer {...filterLayer} />
         </Source>
       </Map>
       <div className="logs">

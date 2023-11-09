@@ -52,3 +52,12 @@ export const geoLayer: FillLayer = {
     "fill-opacity": 0.2,
   },
 };
+
+export const filterLayer: FillLayer = {
+  id: "filtered_data",
+  type: "fill",
+  paint: {
+    "fill-color": "#db34eb",
+    "fill-opacity": 0.5,
+  },
+};

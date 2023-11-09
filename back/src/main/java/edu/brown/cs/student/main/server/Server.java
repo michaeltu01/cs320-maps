@@ -2,17 +2,6 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
-import java.lang.reflect.Type;
-
 import edu.brown.cs.student.main.server.census.ACSAPIDataSource;
 import edu.brown.cs.student.main.server.census.CensusDataSource;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;

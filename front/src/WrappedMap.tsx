@@ -70,11 +70,11 @@ function WrappedMap() {
     <div>
 
     <Map
-    
+        id="mapbox"
         mapboxAccessToken = {ACCESS_TOKEN}
         {...viewState}
         onMove={(ev: ViewStateChangeEvent) => setViewState(ev.viewState)}
-        style={{ width: window.innerWidth, height: window.innerHeight }}
+        style={{ width: "100%", height: "100%" }}
         mapStyle={"mapbox://styles/mapbox/streets-v12"}
         onClick={(ev: MapLayerMouseEvent) => onMapClick(ev)}
         ref={mapRef}

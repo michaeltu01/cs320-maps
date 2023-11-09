@@ -1,8 +1,6 @@
 package edu.brown.cs.student.main.server.exceptions;
 
-/**
- * Class for errors when user makes invalid requests that cannot be processed.
- */
+/** Class for errors when user makes invalid requests that cannot be processed. */
 public class BadRequestException extends Exception {
   private final Throwable cause;
 

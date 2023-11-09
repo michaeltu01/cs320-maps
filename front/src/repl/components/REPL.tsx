@@ -18,6 +18,7 @@ interface REPLProps {
     SetStateAction<GeoJSON.FeatureCollection | undefined>
   >;
   
+  
 }
 
 /**
@@ -30,6 +31,7 @@ export default function REPL(props: REPLProps) {
   const [history, setHistory] = useState<[string, string[][]][]>([]);
   //shared state that lets us know whether the parsed CSV data is wellformed or not
   const [verbose, setVerbose] = useState<boolean>(false);
+
   //shared state that we use to store and access commands that have been registered
   const [commandMap, setCommandMap] = useState<Map<string, REPLFunction>>(
     //initialize with the necessary functions

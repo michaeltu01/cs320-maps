@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 /**
  * Implements parsing functionality (User Story 2)
+ *
  * @param <T> - a generic object to turn the parsed rows into via CreatorFromRow interface
  */
 public class CSVParser<T> {

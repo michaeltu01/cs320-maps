@@ -3,9 +3,7 @@ package edu.brown.cs.student.main.csv.parser;
 import edu.brown.cs.student.main.csv.exceptions.FactoryFailureException;
 import java.util.List;
 
-/**
- * Extends CreatorFromRow to create Row objects
- */
+/** Extends CreatorFromRow to create Row objects */
 public class RowCreator implements CreatorFromRow<Row> {
 
   /**

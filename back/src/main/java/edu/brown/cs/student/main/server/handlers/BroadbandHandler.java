@@ -1,26 +1,22 @@
 package edu.brown.cs.student.main.server.handlers;
 
-import edu.brown.cs.student.main.server.BroadbandCache;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.server.BroadbandCache;
 import edu.brown.cs.student.main.server.census.CensusData;
 import edu.brown.cs.student.main.server.census.CensusDataSource;
 import edu.brown.cs.student.main.server.exceptions.BadJsonException;
 import edu.brown.cs.student.main.server.exceptions.BadRequestException;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-/**
- * BroadbandHandler class which returns the broadband data for the specified county and state.
- */
+/** BroadbandHandler class which returns the broadband data for the specified county and state. */
 public class BroadbandHandler implements Route {
 
   private final CensusDataSource state;
@@ -28,17 +24,18 @@ public class BroadbandHandler implements Route {
 
   /**
    * Constructor which stores an object of the CensusDataSource.
+   *
    * @param state an object of the data source for retrieval
    */
-  public BroadbandHandler(CensusDataSource state){
+  public BroadbandHandler(CensusDataSource state) {
     this.state = state;
     this.cache = new BroadbandCache(10, 10, this.state);
-
   }
 
   /**
-   * Handle method which takes in a state and county name and returns the broadband percentange
-   * of the specified location.
+   * Handle method which takes in a state and county name and returns the broadband percentange of
+   * the specified location.
+   *
    * @param request state name and county name
    * @param response broadband percentage
    * @return
@@ -46,7 +43,7 @@ public class BroadbandHandler implements Route {
   @Override
   public Object handle(Request request, Response response) {
 
-    //Get the state and the county from the request
+    // Get the state and the county from the request
     String state = request.queryParams("state");
     String county = request.queryParams("county");
 

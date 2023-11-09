@@ -4,7 +4,6 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
-
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +12,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-/**
- * ViewCSVHandler class which enables the end user to see the CSV with a query.
- */
+/** ViewCSVHandler class which enables the end user to see the CSV with a query. */
 public class ViewCSVHandler implements Route {
 
   LoadCSVHandler loadCSVHandler;
@@ -25,14 +22,16 @@ public class ViewCSVHandler implements Route {
 
   /**
    * Constructor for ViewCSVHandler which stores an object of loadCSV.
+   *
    * @param loadCSVHandler
    */
-  public ViewCSVHandler(LoadCSVHandler loadCSVHandler){
+  public ViewCSVHandler(LoadCSVHandler loadCSVHandler) {
     this.loadCSVHandler = loadCSVHandler;
   }
 
   /**
    * Handler method for ViewCSVHandler which returns the CSV as a Json.
+   *
    * @param request nothing for view
    * @param response the csv file that is already loaded
    * @return
@@ -57,5 +56,4 @@ public class ViewCSVHandler implements Route {
       return adapter.toJson(responseMap);
     }
   }
-
 }

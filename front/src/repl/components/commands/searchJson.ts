@@ -29,6 +29,9 @@ export async function searchJson(
       type: "FeatureCollection",
       features: features,
     };
+    if (!data.result || data.result.length === 0) {
+      return [[`"${parameters[1]} not in data`]]
+    }
     setFilterOverlay(geojson); // this is mocked geojson
   };
 

@@ -15,9 +15,7 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-/**
- * A class that tests the functionality of the CSVParser class
- */
+/** A class that tests the functionality of the CSVParser class */
 public class CSVParserTest {
 
   // Parsers

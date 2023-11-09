@@ -9,15 +9,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implements search functionality (User Story 1)
- */
+/** Implements search functionality (User Story 1) */
 public class Searcher {
 
   /**
    * Parse the file into a List<Row>
-   * @param filename - the name of the file to parse
    *
+   * @param filename - the name of the file to parse
    * @return the list of all the Rows in the file
    */
   public List<Row> parseFile(String filename) {
@@ -35,11 +33,11 @@ public class Searcher {
 
   /**
    * Search the file for the target value (case-independent)
+   *
    * @param filename - name of the file to search
    * @param searchVal - the value to search for
    * @param hasHeaders - true if the file has headers in the first row; false, if not
    * @param columnId - specific column to search within; could be an index or the column name
-   *
    * @return the List of Rows containing the given value
    */
   public List<Row> search(String filename, String searchVal, boolean hasHeaders, String columnId) {
@@ -90,6 +88,7 @@ public class Searcher {
 
   /**
    * Searches for a specific value in the entire given 2D List of Strings (without header row)
+   *
    * @param data 2D List of Strings representing CSV
    * @param searchVal the String to search for in the data
    * @return the rows containing the value
@@ -107,7 +106,9 @@ public class Searcher {
   }
 
   /**
-   * Searches for a specific value in the given 2D List of Strings by column index (without header row)
+   * Searches for a specific value in the given 2D List of Strings by column index (without header
+   * row)
+   *
    * @param data 2D List of Strings representing CSV
    * @param searchVal the String to search for in the data
    * @param colIndex the name of the column to search for the value

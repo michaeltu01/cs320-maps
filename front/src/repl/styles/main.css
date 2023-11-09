@@ -13,7 +13,7 @@ html {
 }
 
 .repl-history {
-  height: 55vh;
+  height: 70vh;
   margin: auto;
   display: block;
   overflow: scroll;
@@ -23,7 +23,7 @@ html {
 .repl-input {
   margin: auto;
   height: 10vh;
-  padding-top: 18%; /* Add padding to move the input down */
+  /* padding-top: 18%; /* Add padding to move the input down */
 }
 
 .repl-command-box {

@@ -58,6 +58,6 @@ export const filterLayer: FillLayer = {
   type: "fill",
   paint: {
     "fill-color": "#db34eb",
-    "fill-opacity": 0.5,
+    "fill-opacity": 1,
   },
 };

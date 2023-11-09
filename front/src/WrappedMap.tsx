@@ -8,7 +8,7 @@ import Map, {
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import React from "react";
-import { ACCESS_TOKEN } from "./private/key";
+import { ACCESS_TOKEN } from "./private/api";
 import { useState } from "react";
 import { FillLayer, MapRef } from "react-map-gl";
 import { FeatureCollection } from "geojson";
@@ -16,12 +16,23 @@ import { useEffect } from "react";
 import { overlayData } from "./overlays";
 import { geoLayer, filterLayer } from "./overlays";
 import { useRef } from "react";
-import { filterOverlay } from "./geodata/mockVariables";
+import { mockFilterOverlay } from "./geodata/mockVariables";
+import { GeoJSON } from 'geojson';
+import { Dispatch, SetStateAction } from "react";
+
 
 interface WrappedMapProps {
   filterOverlay: GeoJSON.FeatureCollection | undefined;
-}
+  setFilterOverlay: Dispatch<
+    SetStateAction<GeoJSON.FeatureCollection | undefined>
+  >;}
 
+
+  /**
+   * creates our wrapped map componenet
+   * @param props 
+   * @returns 
+   */
 function WrappedMap(props: WrappedMapProps) {
   const mapRef = useRef<MapRef>(null);
 
@@ -34,6 +45,7 @@ function WrappedMap(props: WrappedMapProps) {
   const [overlay, setOverlay] = useState<GeoJSON.FeatureCollection | undefined>(
     undefined
   );
+
   const [lastLog, setLastLog] = useState<string>(""); // To store and display the last console log
 
   useEffect(() => {

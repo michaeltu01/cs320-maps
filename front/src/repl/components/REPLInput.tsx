@@ -37,6 +37,12 @@ interface REPLInputProps {
   setMockValidParsedData: Dispatch<SetStateAction<boolean>>;
 }
 
+
+/**
+ * handles inputs to our repl front end component
+ * @param props 
+ * @returns 
+ */
 export function REPLInput(props: REPLInputProps) {
   //store the entire inputted command
   const [commandString, setCommandString] = useState<string>("");

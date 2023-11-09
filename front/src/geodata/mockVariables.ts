@@ -1,4 +1,4 @@
-export const filterOverlay: GeoJSON.FeatureCollection | undefined = {
+export const mockFilterOverlay: GeoJSON.FeatureCollection | undefined = {
   type: "FeatureCollection",
   features: [
     {

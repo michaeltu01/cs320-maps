@@ -12,6 +12,7 @@ import edu.brown.cs.student.main.server.handlers.csv_handlers.SearchCSVHandler;
 import edu.brown.cs.student.main.server.handlers.csv_handlers.ViewCSVHandler;
 import edu.brown.cs.student.main.server.handlers.json_handlers.FilterJsonHandler;
 import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
+import edu.brown.cs.student.main.server.handlers.json_handlers.SearchJsonHandler;
 import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import spark.Spark;
 
@@ -59,6 +60,7 @@ public class Server {
     Spark.get("/clearcsv", new ClearCSVHandler(loadCSVHandler));
     Spark.get("/loadjson", new LoadJsonHandler());
     Spark.get("/filterjson", new FilterJsonHandler());
+    Spark.get("/searchjson", new SearchJsonHandler());
     Spark.init();
     Spark.awaitInitialization();
   }
@@ -72,6 +74,8 @@ public class Server {
     Spark.unmap("/clearcsv");
     Spark.unmap("/loadjson");
     Spark.unmap("/filterjson");
+    Spark.unmap("/searchjson");
+
     Spark.awaitStop(); // don't proceed until the server is stopped
   }
 

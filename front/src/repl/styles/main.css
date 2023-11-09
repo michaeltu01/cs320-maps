@@ -23,6 +23,7 @@ html {
 .repl-input {
   margin: auto;
   height: 10vh;
+  padding-top: 18%; /* Add padding to move the input down */
 }
 
 .repl-command-box {

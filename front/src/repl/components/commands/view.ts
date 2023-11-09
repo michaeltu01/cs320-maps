@@ -9,7 +9,7 @@ import { REPLFunction } from "../REPL";
 export const viewCSV: REPLFunction = async (
   parameters: string[]
 ): Promise<string[][]> => {
-  if (parameters.length != 0) {
+  if (parameters.length != 1) {
     return [["Invalid parameters inputted"]];
   }
   //view with backend

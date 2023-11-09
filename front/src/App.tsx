@@ -8,16 +8,20 @@ import REPL from "./repl/components/REPL";
 // import {API_KEY} from "./private/api_key"
 
 function App() {
+  const [filterOverlay, setFilterOverlay] = useState<
+    GeoJSON.FeatureCollection | undefined
+  >(undefined);
+
   return (
     <div className="App">
       <div className="container">
         <div className="component">
           <h1 className="header">Maps</h1>
-          <WrappedMap />
+          <WrappedMap filterOverlay={filterOverlay} />
         </div>
         <div className="component">
           <h1 className="header">REPL</h1>
-          <REPL />
+          <REPL setFilterOverlay={setFilterOverlay} />
         </div>
       </div>
     </div>

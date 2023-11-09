@@ -8,6 +8,7 @@ import { searchCSV } from "./commands/REPLSearch";
 import { broadbandRequest } from "./commands/broadband";
 import { REPLFunction } from "./REPL";
 import { mock } from "./commands/mock";
+import { searchJson } from "./commands/searchJson";
 
 //input props
 interface REPLInputProps {
@@ -23,6 +24,10 @@ interface REPLInputProps {
   //inputHistory keeps track of inputs previously entered by the user
   inputHistory: string[];
   setInputHistory: Dispatch<SetStateAction<string[]>>;
+  // setter for filterOverlay
+  setFilterOverlay: Dispatch<
+    SetStateAction<GeoJSON.FeatureCollection | undefined>
+  >;
   /**
    * MOCK STATE VARIABLES
    */
@@ -66,8 +71,7 @@ export function REPLInput(props: REPLInputProps) {
         "",
       ]);
       return;
-    }
-    if (command === "mode") {
+    } else if (command === "mode") {
       //react state variables used for keeping track of verbosity
       output = changeMode(props.verbose, props.setVerbose);
     } else {
@@ -86,6 +90,9 @@ export function REPLInput(props: REPLInputProps) {
           props.mockValidParsedData,
           props.setMockValidParsedData
         );
+      } else if (command === "search_json") {
+        // console.log(parameters);
+        output = await searchJson(parameters, props.setFilterOverlay);
       } else {
         let func = props.commandMap.get(command);
         if (func != undefined) {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import "../styles/main.css";
 import { REPLHistory } from "./REPLHistory";
 import { REPLInput } from "./REPLInput";
@@ -12,7 +12,13 @@ export interface REPLFunction {
   (args: string[]): Promise<string[][]>;
 }
 
-export default function REPL() {
+interface REPLProps {
+  setFilterOverlay: Dispatch<
+    SetStateAction<GeoJSON.FeatureCollection | undefined>
+  >;
+}
+
+export default function REPL(props: REPLProps) {
   //Add some kind of shared state that holds all the outputs submitted.
   const [history, setHistory] = useState<[string, string[][]][]>([]);
   //shared state that lets us know whether the parsed CSV data is wellformed or not
@@ -56,6 +62,7 @@ export default function REPL() {
         setCommandMap={setCommandMap}
         inputHistory={inputHistory}
         setInputHistory={setInputHistory}
+        setFilterOverlay={props.setFilterOverlay}
         //React state variables for mock commands
         mockParsedData={mockParsedData}
         setMockParsedData={setMockParsedData}

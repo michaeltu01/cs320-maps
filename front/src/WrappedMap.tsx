@@ -98,7 +98,9 @@ function WrappedMap(props: WrappedMapProps) {
   }
 
   return (
-    <div>
+    <div
+    aria-label={`Map ${lastLog}`}
+    >
       <Map
         id="mapbox"
         mapboxAccessToken={ACCESS_TOKEN}

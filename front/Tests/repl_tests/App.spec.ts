@@ -22,13 +22,13 @@ test.beforeEach(() => {
  */
 test("on page load, i see an input bar", async ({ page }) => {
   // Notice: http, not https! Our front-end is not set up for HTTPs.
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
   await expect(page.getByLabel("Command input")).toBeVisible();
 });
 
 test("after I type into the input box, its text changes", async ({ page }) => {
   // Step 1: Navigate to a URL
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // Step 2: Interact with the page
   // Locate the element you are looking for
@@ -41,15 +41,9 @@ test("after I type into the input box, its text changes", async ({ page }) => {
   await expect(page.getByLabel("Command input")).toHaveValue(mock_input);
 });
 
-test("on page load, i see a button", async ({ page }) => {
-  // TODO WITH TA: Fill this in!
-  await page.goto("http://localhost:8000/");
-  await expect(page.getByRole("button")).toBeVisible();
-});
-
 test("after I click the button, its label increments", async ({ page }) => {
   // TODO WITH TA: Fill this in to test your button counter functionality!
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
   await expect(
     page.getByRole("button", { name: "Submitted 0 times" })
   ).toBeVisible();
@@ -65,7 +59,7 @@ test("after I click the button, its label increments", async ({ page }) => {
 test("after I press ENTER in text box, button label increments", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
   await expect(
     page.getByRole("button", { name: "Submitted 0 times" })
   ).toBeVisible();

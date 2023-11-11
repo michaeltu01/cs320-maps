@@ -6,12 +6,12 @@ import { test, expect } from "@playwright/test";
 
 // MODE TEST
 test("test that we can switch modes", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // switch to verbose
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   // check output
@@ -39,15 +39,15 @@ test("test that we can switch modes", async ({ page }) => {
 });
 
 test("load mode view mode", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load file
   await page.getByLabel("Command input").click();
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{headerCSV.csv}{true}");
-  const button = await page.locator("button");
-  await button.click();
+    const button = await page.getByLabel('button')
+    await button.click();
 
   // switch mode
   await page.getByLabel("Command input").click();
@@ -87,15 +87,15 @@ test("load mode view mode", async ({ page }) => {
 
 //Searcher integration test for multiple searches
 test("Search multiple times on the same load", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load file
   await page.getByLabel("Command input").click();
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{headerCSV.csv}{true}");
-  const button = await page.locator("button");
-  await button.click();
+    const button = await page.getByLabel('button')
+    await button.click();
 
   //view and check validity for first row
   await page.getByLabel("Command input").click();
@@ -138,15 +138,15 @@ test("Search multiple times on the same load", async ({ page }) => {
 test("state change: load CSV with header then CSV with no header", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load CSV with header
   await page.getByLabel("Command input").click();
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{headerCSV.csv}{true}");
-  const button = await page.locator("button");
-  await button.click();
+    const button = await page.getByLabel('button')
+    await button.click();
 
   //view and check validity
   await page.getByLabel("Command input").click();
@@ -225,15 +225,15 @@ test("state change: load CSV with header then CSV with no header", async ({
 
 //Doing all 3 commands together --> Load -> View -> Search
 test("Using all 3 commands sequentially", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load CSV with header
   await page.getByLabel("Command input").click();
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{headerCSV.csv}{true}");
-  const button = await page.locator("button");
-  await button.click();
+    const button = await page.getByLabel('button')
+    await button.click();
 
   //view and check validity
   await page.getByLabel("Command input").click();
@@ -294,15 +294,15 @@ test("Using all 3 commands sequentially", async ({ page }) => {
 
 //Load, Search, then Load a different CSV and Search
 test("Loading and searching on 2 different CSVs", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load CSV with header
   await page.getByLabel("Command input").click();
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{headerCSV.csv}{true}");
-  const button = await page.locator("button");
-  await button.click();
+    const button = await page.getByLabel('button')
+    await button.click();
 
   //search and check validity
   await page.getByLabel("Command input").click();
@@ -349,15 +349,15 @@ test("Loading and searching on 2 different CSVs", async ({ page }) => {
 //Test CSV and ACS functionality together
 //Load and view, then broadband, then view
 test("Testing interactions between CSV and broadband", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load CSV with header
   await page.getByLabel("Command input").click();
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{headerCSV.csv}{true}");
-  const button = await page.locator("button");
-  await button.click();
+    const button = await page.getByLabel('button')
+    await button.click();
 
   //view and check validity
   await page.getByLabel("Command input").click();
@@ -450,4 +450,191 @@ test("Testing interactions between CSV and broadband", async ({ page }) => {
   await expect(thirdBody.locator("tr").nth(2).locator("td").nth(2)).toHaveText(
     "garlic"
   );
+});
+
+// test load, mode, view, mode, load_json, search_json
+test("load mode view mode, load_json, search_json", async ({ page }) => {
+  await page.goto("http://localhost:5173/");
+
+  //load file
+  await page.getByLabel("Command input").click();
+  await page
+    .getByLabel("Command input")
+    .fill("mock {load_file}{headerCSV.csv}{true}");
+    const button = await page.getByLabel('button')
+    await button.click();
+
+  // switch mode
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mode");
+  await button.click();
+
+  const body1 = await page.locator(".output0").locator("p");
+
+  await expect(body1.nth(0).nth(0)).toHaveText(
+    "Inputted Command: mock {load_file}{headerCSV.csv}{true}"
+  );
+
+  // view contents
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mock {view}");
+  await button.click();
+
+  const body2 = await page.locator(".output2").locator("p");
+
+  await expect(body2.nth(0).nth(0)).toHaveText("Inputted Command: mock {view}");
+
+  // change mode again
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mode");
+  await button.click();
+
+  const body3 = await page
+    .locator(".output3")
+    .locator("table")
+    .locator("tbody")
+    .locator("tr")
+    .locator("td");
+
+  // check that we print the correct thing
+  await expect(body3.nth(0).nth(0)).toHaveText("Successfully switched mode");
+
+  // loading successful json
+  await page.getByLabel('Command input').click();
+  await page.getByLabel('Command input').fill('load_json {back/data/geodata/fullDownload.json}');
+  await page.getByLabel('button').click()
+  await expect(page.getByLabel('output')).toContainText('success- file loaded successfully');
+
+  // searching for a successful json
+  await page.getByLabel('Command input').click();
+  await page.getByLabel('Command input').fill('search_json {schools}');
+  await page.getByLabel('button').click()
+  await expect(page.getByLabel('output')).toContainText('Successful search for: "schools"');
+});
+
+
+// bad load json, load csv, search
+test('bad load json, then a good load csv, then a regular search', async ({ page }) => {
+  await page.goto('http://localhost:5173/');
+
+  // load bad json
+  await page.getByLabel('Command input').click();
+  await page.getByLabel('Command input').fill('load_json {asdfasdfasdf}');
+  await page.getByLabel('button').click()
+  await expect(page.getByLabel('output')).toContainText('error- asdfasdfasdf (No such file or directory)');
+
+  // good load csv
+  await page.getByLabel("Command input").click();
+  await page
+    .getByLabel("Command input")
+    .fill("mock {load_file}{headerCSV.csv}{true}");
+    const button = await page.getByLabel('button')
+    await button.click();
+
+    // search good
+    await page.getByLabel("Command input").click();
+    await page.getByLabel("Command input").fill("mock {search}{isaac yi}");
+    await button.click();
+
+    const firstBody = await page
+    .locator(".output2")
+    .locator("table")
+    .locator("tbody");
+
+  await expect(firstBody.locator("tr").locator("td").nth(0)).toHaveText(
+    "isaac yi"
+  );
+});
+
+// test that we can switch modes in between loading jsons
+test('switching modes in between loading jsons', async ({ page }) => {
+  await page.goto('http://localhost:5173/');
+
+  // successful load
+  await page.getByLabel('Command input').click();
+  await page.getByLabel('Command input').fill('load_json {back/data/geodata/fullDownload.json}');
+  await page.getByLabel('button').click()
+  await expect(page.getByLabel('output')).toContainText('success- file loaded successfully');
+
+  // switch to verbose
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mode");
+  const button = await page.getByLabel('button')
+  await button.click();
+
+  // another successful load
+  await page.getByLabel('Command input').click();
+  await page.getByLabel('Command input').fill('load_json');
+  await page.getByLabel('button').click()
+  await expect(page.getByLabel('output')).toContainText('success- file loaded successfully');
+});
+
+// test everything
+test('HUGE TEST', async ({ page }) =>{
+  await page.goto('http://localhost:5173/');
+
+  // successful load
+  await page.getByLabel('Command input').click();
+  await page.getByLabel('Command input').fill('load_json {back/data/geodata/fullDownload.json}');
+  await page.getByLabel('button').click()
+  await expect(page.getByLabel('output')).toContainText('success- file loaded successfully');
+
+  // switch to verbose
+  await page.getByLabel("Command input").click();
+  await page.getByLabel("Command input").fill("mode");
+  const button = await page.getByLabel('button')
+  await button.click();
+
+  // another successful load
+  await page.getByLabel('Command input').click();
+  await page.getByLabel('Command input').fill('load_json');
+  await page.getByLabel('button').click()
+  await expect(page.getByLabel('output')).toContainText('success- file loaded successfully');
+
+    //load file
+    await page.getByLabel("Command input").click();
+    await page
+      .getByLabel("Command input")
+      .fill("mock {load_file}{headerCSV.csv}{true}");
+      await button.click();
+  
+    // switch mode
+    await page.getByLabel("Command input").click();
+    await page.getByLabel("Command input").fill("mode");
+    await button.click();
+  
+    const body1 = await page.locator(".output0").locator("p");
+  
+  
+    // view contents
+    await page.getByLabel("Command input").click();
+    await page.getByLabel("Command input").fill("mock {view}");
+    await button.click();
+  
+    const body2 = await page.locator(".output2").locator("p");
+    
+    // change mode again
+    await page.getByLabel("Command input").click();
+    await page.getByLabel("Command input").fill("mode");
+    await button.click();
+  
+    const body3 = await page
+      .locator(".output3")
+      .locator("table")
+      .locator("tbody")
+      .locator("tr")
+      .locator("td");
+  
+    // check that we print the correct thing
+  
+    // loading successful json
+    await page.getByLabel('Command input').click();
+    await page.getByLabel('Command input').fill('load_json {back/data/geodata/fullDownload.json}');
+    await page.getByLabel('button').click()
+    await expect(page.getByLabel('output')).toContainText('success- file loaded successfully');
+  
+    // searching for a successful json
+    await page.getByLabel('Command input').click();
+    await page.getByLabel('Command input').fill('search_json {schools}');
+    await page.getByLabel('button').click()
 });

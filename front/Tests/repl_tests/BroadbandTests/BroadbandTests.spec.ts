@@ -9,13 +9,13 @@ import { test, expect } from "@playwright/test";
 // illformed broadband searches
 test("Missing parameters in broadband query", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("broadband {mufasa}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output1 = "Invalid Format of Parameters";
@@ -28,7 +28,7 @@ test("Missing parameters in broadband query", async ({ page }) => {
 //Valid form of inputs, but a county or state that doesn't exist
 test("State not found", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   await page.getByLabel("Command input").click();
   await page
@@ -36,7 +36,7 @@ test("State not found", async ({ page }) => {
     .fill("mock {broadband}{BadState}{San Diego}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output1 =
@@ -49,7 +49,7 @@ test("State not found", async ({ page }) => {
 
 test("County not found", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   await page.getByLabel("Command input").click();
   await page
@@ -57,7 +57,7 @@ test("County not found", async ({ page }) => {
     .fill("mock {broadband}{California}{BadCounty}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output1 =
@@ -71,7 +71,7 @@ test("County not found", async ({ page }) => {
 //Valid query -- success
 test("Successful broadband request", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   await page.getByLabel("Command input").click();
   await page
@@ -79,7 +79,7 @@ test("Successful broadband request", async ({ page }) => {
     .fill("mock {broadband}{Virginia}{Virginia Beach City}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output1 =

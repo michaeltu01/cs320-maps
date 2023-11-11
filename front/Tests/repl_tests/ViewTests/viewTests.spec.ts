@@ -5,15 +5,15 @@ test("after typing search command without loading a file, the error output is pr
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // entering view command
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {view}");
 
   // Click the button
-  const button = await page.locator("button");
-  await button.click();
+  await page.getByLabel('button').click()
+
 
   //output
   const output = await page.textContent(
@@ -30,7 +30,7 @@ test("after typing search command after loading an incorrect file, the error out
   page,
 }) => {
   //go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load the bad csv
   await page.getByLabel("Command input").click();
@@ -39,8 +39,8 @@ test("after typing search command after loading an incorrect file, the error out
     .fill("mock {load_file}{sdfasd.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
-  await button.click();
+  await page.getByLabel('button').click()
+
 
   const output1 = "CSV NOT successfully loaded -- invalid filepath";
   const tdElement = await page.locator("td");
@@ -53,7 +53,7 @@ test("after typing search command after loading an incorrect file, the error out
   await page.getByLabel("Command input").fill("mock {view}");
 
   // click button
-  await button.click();
+  await page.getByLabel('button').click()
 
   const output2 = "No CSV loaded -- please call load_file first!";
   const tdElement2 = await page.locator("td").all();
@@ -67,7 +67,7 @@ test("after loading in a correct file, we are able to view its correct contents"
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load good file
   await page.getByLabel("Command input").click();
@@ -76,13 +76,13 @@ test("after loading in a correct file, we are able to view its correct contents"
     .fill("mock {load_file}{mixedCSV.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
-  await button.click();
+  await page.getByLabel('button').click()
+
 
   //typing view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {view}");
-  await button.click();
+  await page.getByLabel('button').click()
 
   const body = await page.locator(".output1").locator("table").locator("tbody");
 
@@ -106,7 +106,7 @@ test("test that we can see two valid tables loaded one after each other", async 
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load good file
   await page.getByLabel("Command input").click();
@@ -115,13 +115,13 @@ test("test that we can see two valid tables loaded one after each other", async 
     .fill("mock {load_file}{mixedCSV.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
-  await button.click();
+  await page.getByLabel('button').click()
+
 
   //typing view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {view}");
-  await button.click();
+  await page.getByLabel('button').click()
 
   const body = await page.locator(".output1").locator("table").locator("tbody");
 
@@ -143,12 +143,12 @@ test("test that we can see two valid tables loaded one after each other", async 
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{headerCSV.csv}{true}");
-  await button.click();
+    await page.getByLabel('button').click()
 
   // view the file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {view}");
-  await button.click();
+  await page.getByLabel('button').click()
 
   const body1 = await page
     .locator(".output3")
@@ -190,7 +190,7 @@ test("tests that we can still view a valid file after loading and viewing a bad 
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load a bad file
   await page.getByLabel("Command input").click();
@@ -199,13 +199,13 @@ test("tests that we can still view a valid file after loading and viewing a bad 
     .fill("mock {load_file}{bad.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
-  await button.click();
+  await page.getByLabel('button').click()
+
 
   //typing view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {view}");
-  await button.click();
+  await page.getByLabel('button').click()
 
   const output2 = "No CSV loaded -- please call load_file first!";
   const tdElement2 = await page.locator("td").all();
@@ -218,12 +218,12 @@ test("tests that we can still view a valid file after loading and viewing a bad 
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{headerCSV.csv}{true}");
-  await button.click();
+    await page.getByLabel('button').click()
 
   // view the good file
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {view}");
-  await button.click();
+  await page.getByLabel('button').click()
 
   const body1 = await page
     .locator(".output3")
@@ -264,7 +264,7 @@ test("tests that the correct error is printed when viewing a bad file after view
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load good file
   await page.getByLabel("Command input").click();
@@ -273,13 +273,13 @@ test("tests that the correct error is printed when viewing a bad file after view
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
-  await button.click();
+  await page.getByLabel('button').click()
+
 
   //typing view
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {view}");
-  await button.click();
+  await page.getByLabel('button').click()
 
   const body1 = await page
     .locator(".output1")
@@ -320,11 +320,11 @@ test("tests that the correct error is printed when viewing a bad file after view
   await page
     .getByLabel("Command input")
     .fill("mock {load_file}{bad.csv}{false}");
-  await button.click();
+    await page.getByLabel('button').click()
 
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {view}");
-  await button.click();
+  await page.getByLabel('button').click()
 
   const output2 = "No CSV loaded -- please call load_file first!";
   const body2 = await page

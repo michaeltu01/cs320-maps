@@ -1,8 +1,18 @@
 import { test, expect } from "@playwright/test";
 
+test.afterEach(async () => {
+  let output = { type: "", details: "" };
+  await fetch("http://localhost:3232/clearcsv")
+    .then((response) => response.json())
+    .then((responseJson) => (output = responseJson));
+  expect(output.type).toBe("success");
+  expect(output.details).toBe("Loaded files cleared.");
+});
+
+
 test("front-end and back-end integration - do everything", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load ten-star.csv file
   await page.getByLabel("Command input").click();
@@ -10,7 +20,7 @@ test("front-end and back-end integration - do everything", async ({ page }) => {
     .getByLabel("Command input")
     .fill("load_file {stars/ten-star.csv}{true}");
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   // validate load success output
@@ -205,7 +215,7 @@ test("front-end and back-end integration - do everything", async ({ page }) => {
     .getByLabel("Command input")
     .fill("load_file {ri-acs-5-year-2017-2021.csv}{true}");
   // Click the button
-  await page.locator("button").click();
+  await page.getByLabel("button").click();
 
   // validate load success output
   const output4 = "success- file loaded successfully";
@@ -235,7 +245,7 @@ test("front-end and back-end integration - do everything", async ({ page }) => {
 
 test("search no rows found", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load ten-star.csv file
   await page.getByLabel("Command input").click();
@@ -244,7 +254,7 @@ test("search no rows found", async ({ page }) => {
     .fill("load_file {stars/ten-star.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   // validate load successful
@@ -286,7 +296,7 @@ test("search no rows found", async ({ page }) => {
 
 test("search by column ID", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load ten-star.csv file
   await page.getByLabel("Command input").click();
@@ -294,7 +304,7 @@ test("search by column ID", async ({ page }) => {
     .getByLabel("Command input")
     .fill("load_file {stars/ten-star.csv}{true}");
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   // validate load success output
@@ -336,7 +346,7 @@ test("search by column ID", async ({ page }) => {
 
 test("load an unknown file", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load malicious.csv
   await page.getByLabel("Command input").click();
@@ -344,7 +354,7 @@ test("load an unknown file", async ({ page }) => {
     .getByLabel("Command input")
     .fill("load_file {C:\\Code\\CS320\\malicious-file.csv}{false}");
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   // validate load error output
@@ -362,7 +372,7 @@ test("load an unknown file", async ({ page }) => {
     .getByLabel("Command input")
     .fill("load_file {stars/ten-star.csv}{idk}");
   // Click the button
-  await page.locator("button").click();
+  await page.getByLabel("button").click();
 
   // validate load error output
   const output1 = "error- Invalid header parameter: idk";
@@ -374,14 +384,14 @@ test("load an unknown file", async ({ page }) => {
 // Proves that frontend can handle backend error responses
 test("broadband errors", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // broadband request for Ontario, Canada
   await page.getByLabel("Command input").fill("broadband {Canada}{Ontario}");
   await page.keyboard.press("Enter");
 
   // validate broadband error
-  const output0 = "error: The state you have given cannot be found: Canada";
+  const output0 = "error: edu.brown.cs.student.main.server.exceptions.BadJsonException: The state you have given cannot be found: Canada";
   const tdElement = page.locator(".output0").locator("td");
   const actualOutput = await tdElement.textContent();
   expect(actualOutput).toBe(output0);
@@ -389,7 +399,7 @@ test("broadband errors", async ({ page }) => {
 
 test("view errors", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // view when no file has been loaded
   await page.getByLabel("Command input").fill("view");
@@ -400,13 +410,4 @@ test("view errors", async ({ page }) => {
   const tdElement = page.locator(".output0").locator("td");
   const actualOutput = await tdElement.textContent();
   expect(actualOutput).toBe(output0);
-});
-
-test.afterEach("clear the file loaded in the backend", async () => {
-  let output = { type: "", details: "" };
-  await fetch("http://localhost:3232/clearcsv")
-    .then((response) => response.json())
-    .then((responseJson) => (output = responseJson));
-  expect(output.type).toBe("success");
-  expect(output.details).toBe("Loaded files cleared.");
 });

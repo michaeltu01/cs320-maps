@@ -207,7 +207,7 @@ export function REPLInput(props: REPLInputProps) {
         To submit your command, press the ENTER key or tab to the submit button
         and click.
       </div>
-      <button onClick={() => handleSubmit(commandString)} tabIndex={1}>
+      <button aria-label="button" onClick={() => handleSubmit(commandString)} tabIndex={1}>
         Submitted {count} times
       </button>
     </div>

@@ -103,9 +103,61 @@ public class LoadJsonTests {
 
     // check json response
 
-    responseMap.put("filepath", "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json");
+//    responseMap.put("filepath", "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json");
+    responseMap.put("filepath", "C:\\Code\\CS320\\maps-iyi3-mstu\\back\\data\\geodata\\fullDownload.json");
     responseMap.put("type", "success");
     responseMap.put("details", "file loaded successfully");
+    System.out.println(body);
+
+    assertEquals(responseMap, body);
+  }
+
+  @Test
+  public void testLoadingAnotherJson() throws Exception {
+    HttpURLConnection clientConnection = tryRequest("loadjson?filepath=src/test/java/edu/brown/cs/student/jsons/exampleGeoJson.txt");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    Map<String, Object> body =
+        adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    responseMap.put("filepath", "src/test/java/edu/brown/cs/student/jsons/exampleGeoJson.txt");
+    responseMap.put("type", "success");
+    responseMap.put("details", "file loaded successfully");
+    System.out.println(body);
+
+    assertEquals(responseMap, body);
+  }
+
+  @Test
+  public void testInvalidFilepath() throws Exception {
+    HttpURLConnection clientConnection = tryRequest("loadjson?filepath=adfasdfa");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    Map<String, Object> body =
+        adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    responseMap.put("type", "error");
+    responseMap.put("error_type", "error_datasource");
+    responseMap.put("details", "Invalid file path: adfasdfa");
+    System.out.println(body);
+
+    assertEquals(responseMap, body);
+  }
+
+  @Test
+  public void testInvalidJsonFormat() throws Exception {
+    HttpURLConnection clientConnection = tryRequest("loadjson?filepath=src/test/java/edu/brown/cs/student/jsons/json2.txt");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    Map<String, Object> body =
+        adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    responseMap.put("type", "error");
+    responseMap.put("error_type", "error_datasource");
+    responseMap.put("details", "src/test/java/edu/brown/cs/student/jsons/json2.txt");
     System.out.println(body);
 
     assertEquals(responseMap, body);

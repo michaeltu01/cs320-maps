@@ -4,10 +4,14 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.Server;
+import edu.brown.cs.student.main.server.exceptions.BadJsonException;
 import edu.brown.cs.student.main.server.exceptions.BadRequestException;
+import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import edu.brown.cs.student.main.server.json_classes.Feature;
 import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import edu.brown.cs.student.main.server.json_classes.FeatureProperties;
+import edu.brown.cs.student.main.server.server_responses.ServerFailureResponse;
+import edu.brown.cs.student.main.server.server_responses.SuccessGeoJsonResponse;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -21,50 +25,47 @@ import spark.Route;
 public class SearchJsonHandler implements Route {
 
   private FeatureCollection json;
+  private List<String> searchHistory;
 
   public SearchJsonHandler() {
     this.json = new FeatureCollection(null, null);
+    this.searchHistory = new ArrayList<String>();
   }
 
   @Override
   public Object handle(Request request, Response response) {
-    // format: /searchjson?search=_
-    String searchVal = request.queryParams("search");
-
     Moshi moshi = new Moshi.Builder().build();
-    Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
-    JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
+    JsonAdapter<SuccessGeoJsonResponse> successAdapter = moshi.adapter(SuccessGeoJsonResponse.class);
+    JsonAdapter<ServerFailureResponse> failureAdapter = moshi.adapter(ServerFailureResponse.class);
     Map<String, Object> responseMap = new HashMap<>();
 
-    this.json = Server.getSharedJson();
-
     try {
+      // format: /searchjson?search=_
+      String searchVal = request.queryParams("search");
+
+      this.json = Server.getSharedJson();
+
       if (this.json == null) {
-        throw new IOException("please load in a json before searching");
+        throw new DatasourceException("please load in a json before searching");
       }
       if (searchVal == null) {
         throw new BadRequestException("'value' parameter missing");
       }
 
-      Object searches = areaQuery(searchVal);
+      List<Feature> searches = areaQuery(searchVal);
+      FeatureCollection featureCollection = new FeatureCollection("FeatureCollection", searches);
 
-      responseMap.put("type", "success");
-      responseMap.put("result", searches);
-
-      return adapter.toJson(responseMap);
-
+      return successAdapter.toJson(new SuccessGeoJsonResponse("success", featureCollection, null));
     } catch (BadRequestException e) {
-      responseMap.put("type", "error");
-      responseMap.put("error_type", "missing val");
-      return adapter.toJson(responseMap);
-    } catch (IOException e) {
-      responseMap.put("type", "error");
-      responseMap.put("error_type", "unloaded json");
-      return adapter.toJson(responseMap);
+      return failureAdapter.toJson(new ServerFailureResponse("error", "error_bad_request", e.getMessage()));
+    } catch (DatasourceException e) {
+      return failureAdapter.toJson(new ServerFailureResponse("error", "error_datasource", e.getMessage()));
+    } catch (BadJsonException e) {
+      return failureAdapter.toJson(new ServerFailureResponse("error", "error_bad_json", e.getMessage()));
     }
   }
 
-  private Object areaQuery(String keyword) {
+  private List<Feature> areaQuery(String keyword) throws BadJsonException {
     List<Feature> filteredFeatures = new ArrayList<>();
     try {
       for (Feature feature : this.json.features()) {
@@ -79,9 +80,9 @@ public class SearchJsonHandler implements Route {
         }
       }
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      throw e;
+      throw new BadJsonException("Keyword not found", e.getCause());
     }
+    this.searchHistory.add(keyword);
     return filteredFeatures;
   }
 }

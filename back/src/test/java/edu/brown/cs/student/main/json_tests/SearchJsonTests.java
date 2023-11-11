@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import okio.Buffer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spark.Spark;
 
-public class searchjsonTests {
+public class SearchJsonTests {
   private Moshi moshi;
   private JsonAdapter<Map<String, Object>> adapter;
   private Map<String, Object> responseMap;

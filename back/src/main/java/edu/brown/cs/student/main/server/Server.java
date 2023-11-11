@@ -27,7 +27,10 @@ public class Server {
 
   private static FeatureCollection sharedJson;
 
-  public static FeatureCollection getSharedJson() {
+  public static FeatureCollection getSharedJson() throws DatasourceException {
+    if (sharedJson == null) {
+      throw new DatasourceException("No file loaded");
+    }
     return sharedJson; // Return the sharedjson variable
   }
 

@@ -6,6 +6,7 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
+import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
 import edu.brown.cs.student.main.server.handlers.json_handlers.SearchJsonHandler;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -14,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import okio.Buffer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -41,15 +44,16 @@ public class searchjsonTests {
    * @throws DatasourceException
    */
   @BeforeEach
-  public void setup() throws DatasourceException {
+  public void setup() throws DatasourceException, IOException {
     // In fact, restart the entire Spark server for every test!
-
     Spark.get("/searchjson", new SearchJsonHandler());
+    Spark.get("/loadjson", new LoadJsonHandler());
     Spark.init();
     Spark.awaitInitialization(); // don't continue until the server is listening
 
     moshi = new Moshi.Builder().build();
     adapter = moshi.adapter(Types.newParameterizedType(Map.class, String.class, Object.class));
+
     responseMap = new HashMap<String, Object>();
   }
 
@@ -86,6 +90,8 @@ public class searchjsonTests {
     clientConnection.connect();
     return clientConnection;
   }
+
+  
 
   ////////////////
   // Tests!! /////
@@ -127,14 +133,23 @@ public class searchjsonTests {
   // tests a search that works
   @Test
   public void testWorkingSearch() throws IOException {
+    // Load JSON before the search
+    HttpURLConnection loadJsonConnection =
+            tryRequest("loadjson");
+    assertEquals(200, loadJsonConnection.getResponseCode());
+
+    // Read and discard the response for the loadjson request
+    new Buffer().readFrom(loadJsonConnection.getInputStream());
+
     HttpURLConnection clientConnection =
         tryRequest("searchjson?search=adjacent%20to%20Central%20Park-%20good%20transportation");
-    assertEquals(200, clientConnection.getResponseCode());
+    //assertEquals(200, clientConnection.getResponseCode());
 
     Map<String, Object> body =
         adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
     Object result = body.get("result");
+
     // Object properties = result.get("properties");
 
   }

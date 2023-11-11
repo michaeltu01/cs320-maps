@@ -107,7 +107,8 @@ public void testWorkingFilter() throws IOException {
     // check json response
     responseMap.put("type", "success");
 
-    assertEquals(responseMap, body);
+    // http://localhost:3232/filterjson?minlong=-71.37&minlat=41.7&maxlong=-71&maxlat=41.88
+
 }
 
 

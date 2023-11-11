@@ -72,8 +72,8 @@ export default defineConfig({
   /* NOTE: Notice we are running our backend through command line as well! */
   webServer: [
     {
-    command: 'npm start',
-    url: 'http://localhost:8000',
+    command: 'npm run dev',
+    url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     },
   ],

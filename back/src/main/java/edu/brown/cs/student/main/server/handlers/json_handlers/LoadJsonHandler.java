@@ -63,7 +63,7 @@ public class LoadJsonHandler implements Route {
     } catch (IOException e) {
       throw new DatasourceException(e.getMessage(), e.getCause());
     } catch (JsonDataException e) {
-      throw new DatasourceException(e.getMessage(), e.getCause());
+      throw new DatasourceException("Your file is not a GeoJson. Please check that your JSON matches the structure of a GeoJson.", e.getCause());
     }
 
     if (json == null || json.features() == null || json.type() == null) {

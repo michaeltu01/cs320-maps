@@ -7,7 +7,8 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
-import edu.brown.cs.student.main.server.handlers.json_handlers.SearchJsonHandler;
+import edu.brown.cs.student.main.server.handlers.json_handlers.FilterJsonHandler;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import okio.Buffer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -25,10 +24,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spark.Spark;
 
-public class searchjsonTests {
-  private Moshi moshi;
-  private JsonAdapter<Map<String, Object>> adapter;
-  private Map<String, Object> responseMap;
+
+public class FilterJsonTests {
+    private Moshi moshi;
+    private JsonAdapter<Map<String, Object>> adapter;
+    private Map<String, Object> responseMap;
   /** Sets up the port. */
   @BeforeAll
   public static void setupOnce() {
@@ -44,16 +44,15 @@ public class searchjsonTests {
    * @throws DatasourceException
    */
   @BeforeEach
-  public void setup() throws DatasourceException, IOException {
+  public void setup() throws DatasourceException {
     // In fact, restart the entire Spark server for every test!
-    Spark.get("/searchjson", new SearchJsonHandler());
-    Spark.get("/loadjson", new LoadJsonHandler());
+
+    Spark.get("/filterjson", new FilterJsonHandler());
     Spark.init();
     Spark.awaitInitialization(); // don't continue until the server is listening
 
     moshi = new Moshi.Builder().build();
     adapter = moshi.adapter(Types.newParameterizedType(Map.class, String.class, Object.class));
-
     responseMap = new HashMap<String, Object>();
   }
 
@@ -63,11 +62,11 @@ public class searchjsonTests {
     Thread.sleep(3000);
   }
 
-  /** Tears down the searchjson handler after use. */
+  /** Tears down the filterjson handler after use. */
   @AfterEach
   public void tearDown() {
     // Gracefully stop Spark listening on both endpoints
-    Spark.unmap("/searchjson");
+    Spark.unmap("/filterjson");
     Spark.awaitStop(); // don't proceed until the server is stopped
   }
 
@@ -91,66 +90,27 @@ public class searchjsonTests {
     return clientConnection;
   }
 
-  
-
   ////////////////
   // Tests!! /////
   ////////////////
 
-  // tests when searchjson is missing
-  @Test
-  public void testMissingSearchValue() throws IOException {
+// tests that a filter json works
+@Test
+public void testWorkingFilter() throws IOException {
+  HttpURLConnection clientConnection =
+      tryRequest("filterjson?minlong=-71.37&minlat=41&maxlong=-71&maxlat=42");
+  assertEquals(200, clientConnection.getResponseCode());
 
-    HttpURLConnection clientConnection = tryRequest("searchjson");
-    assertEquals(200, clientConnection.getResponseCode());
-
-    Map<String, Object> body =
-        adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
-
-    // check json response
-    responseMap.put("type", "error");
-    responseMap.put("error_type", "unloaded json");
-
-    assertEquals(responseMap, body);
-  }
-
-  // tests when we search without loading json
-  @Test
-  public void testUnloadedJson() throws IOException {
-    HttpURLConnection clientConnection = tryRequest("searchjson?search=birmingham");
-    assertEquals(200, clientConnection.getResponseCode());
-
-    Map<String, Object> body =
-        adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+  Map<String, Object> body =
+      adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
     // check json response
-    responseMap.put("type", "error");
-    responseMap.put("error_type", "unloaded json");
+    responseMap.put("type", "success");
 
-    assertEquals(responseMap, body);
-  }
+    // http://localhost:3232/filterjson?minlong=-71.37&minlat=41.7&maxlong=-71&maxlat=41.88
 
-  // tests a search that works
-  @Test
-  public void testWorkingSearch() throws IOException {
-    // Load JSON before the search
-    HttpURLConnection loadJsonConnection =
-            tryRequest("loadjson");
-    assertEquals(200, loadJsonConnection.getResponseCode());
+}
 
-    // Read and discard the response for the loadjson request
-    new Buffer().readFrom(loadJsonConnection.getInputStream());
 
-    HttpURLConnection clientConnection =
-        tryRequest("searchjson?search=adjacent%20to%20Central%20Park-%20good%20transportation");
-    //assertEquals(200, clientConnection.getResponseCode());
 
-    Map<String, Object> body =
-        adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
-
-    Object result = body.get("result");
-
-    // Object properties = result.get("properties");
-
-  }
 }

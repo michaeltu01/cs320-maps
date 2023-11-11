@@ -2,9 +2,7 @@ package edu.brown.cs.student.main.csv.parser;
 
 import java.util.List;
 
-/**
- * Object that represents a row in a CSV
- */
+/** Object that represents a row in a CSV */
 public class Row {
   private List<String> values;
 
@@ -73,6 +71,7 @@ public class Row {
 
   /**
    * Class-specific equals method for Row objects
+   *
    * @param o - a given Object to compare to
    * @return true if this Row has the same values as Object o; false, if not
    */

@@ -1,12 +1,12 @@
 package edu.brown.cs.student.main.server_tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import edu.brown.cs.student.main.server.census.ACSAPIDataSource;
-import edu.brown.cs.student.main.server.census.CensusData;
 import edu.brown.cs.student.main.server.exceptions.BadJsonException;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ACSAPIDataSourceTests {
 
@@ -14,6 +14,7 @@ public class ACSAPIDataSourceTests {
 
   /**
    * Tests accessing ACS API to get broadband percent
+   *
    * @throws DatasourceException
    * @throws BadJsonException
    */
@@ -34,6 +35,7 @@ public class ACSAPIDataSourceTests {
 
   /**
    * Test whether the bad JSON exception throws when the state/county cannot be found
+   *
    * @throws DatasourceException
    */
   @Test
@@ -42,12 +44,16 @@ public class ACSAPIDataSourceTests {
 
     String state = "California";
     String county = "Virginia Beach City";
-    BadJsonException expected = assertThrows(BadJsonException.class, () -> source.getBroadbandPct(state, county));
-    assertEquals(expected.getMessage(), "The county that you have given cannot be found: Virginia Beach City, California");
+    BadJsonException expected =
+        assertThrows(BadJsonException.class, () -> source.getBroadbandPct(state, county));
+    assertEquals(
+        expected.getMessage(),
+        "The county that you have given cannot be found: Virginia Beach City, California");
 
     String misspelledState = "Birginia";
 
-    expected = assertThrows(BadJsonException.class, () -> source.getBroadbandPct(misspelledState, county));
+    expected =
+        assertThrows(BadJsonException.class, () -> source.getBroadbandPct(misspelledState, county));
     assertEquals(expected.getMessage(), "The state you have given cannot be found: Birginia");
   }
 }

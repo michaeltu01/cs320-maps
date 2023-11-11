@@ -17,8 +17,8 @@ import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import spark.Spark;
 
 /**
- * Server class which is responsible for setting up our server by instantiating each of
- * our handlers and hooking them up to the API.
+ * Server class which is responsible for setting up our server by instantiating each of our handlers
+ * and hooking them up to the API.
  */
 public class Server {
 
@@ -36,20 +36,22 @@ public class Server {
   }
 
   /**
-   * Server constructor which sets up the port as well as each of our handlers. LoadCSVHandler
-   * is passed into SearchCSVHandler and ViewCSVHandler so that they have references.
+   * Server constructor which sets up the port as well as each of our handlers. LoadCSVHandler is
+   * passed into SearchCSVHandler and ViewCSVHandler so that they have references.
+   *
    * @param toUse the Data source that is being used by the BroadbandHandler to retrieve information
    */
-  public Server(CensusDataSource toUse){
+  public Server(CensusDataSource toUse) {
 
     state = toUse;
 
     Spark.port(port);
 
-    after((request, response) -> {
-      response.header("Access-Control-Allow-Origin", "*");
-      response.header("Access-Control-Allow-Methods", "*");
-    });
+    after(
+        (request, response) -> {
+          response.header("Access-Control-Allow-Origin", "*");
+          response.header("Access-Control-Allow-Methods", "*");
+        });
 
     LoadCSVHandler loadCSVHandler = new LoadCSVHandler();
 
@@ -81,6 +83,7 @@ public class Server {
 
   /**
    * Main method which instantiates our server object as well as a DataSource object.
+   *
    * @param args
    */
   public static void main(String args[]) {
@@ -90,6 +93,5 @@ public class Server {
     } catch (DatasourceException e) {
       System.err.println("Server failed to start: " + e.getMessage());
     }
-
   }
 }

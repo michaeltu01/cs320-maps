@@ -8,8 +8,11 @@ interface REPLHistoryProps {
   verbose: boolean;
 }
 
-//REPLHistory will go through and print out the history as a table format
-//Command only printed if verbose is true
+/**
+ * goes through the history as a table format
+ * @param props 
+ * @returns 
+ */
 export function REPLHistory(props: REPLHistoryProps) {
   return (
     <div

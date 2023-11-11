@@ -3,11 +3,10 @@ package edu.brown.cs.student.main.server.handlers.csv_handlers;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-
+import edu.brown.cs.student.main.csv.searcher.Searcher;
 import edu.brown.cs.student.main.server.exceptions.BadJsonException;
 import edu.brown.cs.student.main.server.exceptions.BadRequestException;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,11 +15,10 @@ import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import edu.brown.cs.student.main.csv.searcher.Searcher;
 
 /**
- * SearchCSVHandler class which enables the end user to query for specific information in the
- * loaded CSV.
+ * SearchCSVHandler class which enables the end user to query for specific information in the loaded
+ * CSV.
  */
 public class SearchCSVHandler implements Route {
 
@@ -32,14 +30,16 @@ public class SearchCSVHandler implements Route {
 
   /**
    * Constructor which saves a reference to the LoadCSVHandler object.
+   *
    * @param loadCSVHandler reference to the loadCSVHandler object
    */
-  public SearchCSVHandler(LoadCSVHandler loadCSVHandler){
+  public SearchCSVHandler(LoadCSVHandler loadCSVHandler) {
     this.loadCSVHandler = loadCSVHandler;
   }
 
   /**
    * Constructor made for testing
+   *
    * @param immutableHeader immutable header object
    * @param immutableData immutable data object
    */
@@ -50,8 +50,9 @@ public class SearchCSVHandler implements Route {
   }
 
   /**
-   * Handler for Search CSV which takes in the query data of value, index, and column and returns the
-   * sought data.
+   * Handler for Search CSV which takes in the query data of value, index, and column and returns
+   * the sought data.
+   *
    * @param request the value, index, and column of the search
    * @param response the result of the search
    * @return
@@ -82,24 +83,39 @@ public class SearchCSVHandler implements Route {
       // Search for the value
       Searcher searcher = new Searcher();
       List<List<String>> searchResults = new ArrayList<>();
-      if (index == null && colName != null) {  // search by column name
+      if (index == null && colName != null) { // search by column name
         if (!headerExists(colName)) {
-          throw new BadRequestException("Column name not found: " + colName
-            + ". Here are the possible column names: " + headerImmutable.toString());
+          throw new BadRequestException(
+              "Column name not found: "
+                  + colName
+                  + ". Here are the possible column names: "
+                  + headerImmutable.toString());
         }
         int colIndex = headerImmutable.indexOf(colName);
         searchResults = searcher.search(this.parsedImmutable, searchVal, colIndex);
       } else if (index != null && colName == null) { // search by column index
         int colIndex = Integer.parseInt(index);
-        if (colIndex < 0 || colIndex >= parsedImmutable.get(0).size()) { // if index is out of bounds
-          throw new BadRequestException("Column index out of bounds. The file has " + parsedImmutable.get(0).size() + " columns.");
+        if (colIndex < 0
+            || colIndex >= parsedImmutable.get(0).size()) { // if index is out of bounds
+          throw new BadRequestException(
+              "Column index out of bounds. The file has "
+                  + parsedImmutable.get(0).size()
+                  + " columns.");
         }
         searchResults = searcher.search(this.parsedImmutable, searchVal, colIndex);
       } else if (index != null && colName != null) { // user specified both (search by column index)
         int colIndex = Integer.parseInt(index);
         if (headerExists(colName) && colIndex != headerImmutable.indexOf(colName)) {
-          throw new BadRequestException("Index (" + index + ") and column name (" + colName + ") does not match. "
-              + "There are " + headerImmutable.size() + " columns: " + headerImmutable.toString());
+          throw new BadRequestException(
+              "Index ("
+                  + index
+                  + ") and column name ("
+                  + colName
+                  + ") does not match. "
+                  + "There are "
+                  + headerImmutable.size()
+                  + " columns: "
+                  + headerImmutable.toString());
         }
         searchResults = searcher.search(this.parsedImmutable, searchVal, colIndex);
       } else { // search the entire CSV file
@@ -111,18 +127,22 @@ public class SearchCSVHandler implements Route {
       }
 
       // Add the header row to the results
-      if(this.headerImmutable != null && !this.headerImmutable.isEmpty()) {
+      if (this.headerImmutable != null && !this.headerImmutable.isEmpty()) {
         searchResults.add(0, this.headerImmutable);
       }
 
       // Produce success response
       responseMap.put("type", "success");
       responseMap.put("value", searchVal);
-      if (index != null) {responseMap.put("index", index);}
-      if (colName != null) {responseMap.put("column", colName);}
-      //responseMap.put("results", searchResults.toString().replaceAll(removeQuotes, "$1"));
+      if (index != null) {
+        responseMap.put("index", index);
+      }
+      if (colName != null) {
+        responseMap.put("column", colName);
+      }
+      // responseMap.put("results", searchResults.toString().replaceAll(removeQuotes, "$1"));
       responseMap.put("data", searchResults);
-      //responseMap.put("data", this.parsedImmutable.toString().replaceAll(removeQuotes, "$1"));
+      // responseMap.put("data", this.parsedImmutable.toString().replaceAll(removeQuotes, "$1"));
       return adapter.toJson(responseMap);
     } catch (BadRequestException e) {
       responseMap.put("type", "error");
@@ -149,6 +169,7 @@ public class SearchCSVHandler implements Route {
 
   /**
    * A private helper method that checks whether the given header exists in the loaded CSV
+   *
    * @return true, if the header exists; false, otherwise
    */
   private boolean headerExists(String header) throws BadRequestException {
@@ -163,5 +184,4 @@ public class SearchCSVHandler implements Route {
     }
     return false;
   }
-
 }

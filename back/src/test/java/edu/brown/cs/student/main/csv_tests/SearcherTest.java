@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 
-/**
- * A class that tests the functionality of the Searcher class/utility program
- */
+/** A class that tests the functionality of the Searcher class/utility program */
 public class SearcherTest {
 
   private static Searcher searchUtil;
@@ -244,10 +242,7 @@ public class SearcherTest {
     assertTrue(listEquals(expected3, actual3));
   }
 
-  public void ExtraConstructor1Test(){
-
-
-  }
+  public void ExtraConstructor1Test() {}
 
   /**
    * Checks for equality in every value of the List

@@ -19,9 +19,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-/**
- * Class for handling the loading of CSV data
- */
+/** Class for handling the loading of CSV data */
 public class LoadCSVHandler implements Route {
 
   private ListCreator listCreator;
@@ -34,6 +32,7 @@ public class LoadCSVHandler implements Route {
 
   /**
    * Handler for the loadcsv endpoint
+   *
    * @param request user request to the loadcsv endpoint
    * @param response
    * @return JSON response
@@ -91,6 +90,7 @@ public class LoadCSVHandler implements Route {
 
   /**
    * A public method that returns the CSV data as an immutable list (read-only)
+   *
    * @return read-only version of CSV data
    */
   public List<List<String>> getReadOnlyCSVData() throws DatasourceException {
@@ -102,6 +102,7 @@ public class LoadCSVHandler implements Route {
 
   /**
    * A public method that returns the headers of the CSV file as an immutable list (read-only)
+   *
    * @return read-only List of CSV headers
    */
   public List<String> getReadOnlyHeaders() {
@@ -112,7 +113,9 @@ public class LoadCSVHandler implements Route {
   }
 
   /**
-   * A public method that returns the entire CSV file (parsed) with headers as an immutable list (read-only)
+   * A public method that returns the entire CSV file (parsed) with headers as an immutable list
+   * (read-only)
+   *
    * @return the entire CSV file with headers
    * @throws DatasourceException when CSV has not been parsed
    */
@@ -128,9 +131,7 @@ public class LoadCSVHandler implements Route {
     return Collections.unmodifiableList(csvData);
   }
 
-  /**
-   * This function clears the currently loaded CSV data for testing on the front end. 
-   */
+  /** This function clears the currently loaded CSV data for testing on the front end. */
   public void clear() {
     this.headers = null;
     this.parsedCSVData = null;
@@ -138,12 +139,13 @@ public class LoadCSVHandler implements Route {
 
   /**
    * A private helper method that parses the CSV into a 2D List of Strings
+   *
    * @return CSV data as 2D List of Strings
    * @throws DatasourceException if filename not found
    */
   private void parseCSV(Boolean hasHeaders) throws DatasourceException {
     try {
-      this.fileReader = new FileReader(this.CSVFileName);  // back/data/*.csv
+      this.fileReader = new FileReader(this.CSVFileName); // back/data/*.csv
       this.listCreator = new ListCreator();
       CSVParser<List<String>> fileCSVParser = new CSVParser<List<String>>(fileReader, listCreator);
       this.parsedCSVData = fileCSVParser.parseCSV();

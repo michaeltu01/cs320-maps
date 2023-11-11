@@ -7,6 +7,7 @@ import { loadCSV } from "./commands/REPLLoad";
 import { viewCSV } from "./commands/view";
 import { searchCSV } from "./commands/REPLSearch";
 import { broadbandRequest } from "./commands/broadband";
+import { searchJson } from "./commands/searchJson";
 
 export interface REPLFunction {
   (args: string[]): Promise<string[][]>;
@@ -16,13 +17,21 @@ interface REPLProps {
   setFilterOverlay: Dispatch<
     SetStateAction<GeoJSON.FeatureCollection | undefined>
   >;
+  
+  
 }
 
+/**
+ * creates our repl front end component
+ * @param props 
+ * @returns 
+ */
 export default function REPL(props: REPLProps) {
   //Add some kind of shared state that holds all the outputs submitted.
   const [history, setHistory] = useState<[string, string[][]][]>([]);
   //shared state that lets us know whether the parsed CSV data is wellformed or not
   const [verbose, setVerbose] = useState<boolean>(false);
+
   //shared state that we use to store and access commands that have been registered
   const [commandMap, setCommandMap] = useState<Map<string, REPLFunction>>(
     //initialize with the necessary functions
@@ -68,6 +77,8 @@ export default function REPL(props: REPLProps) {
         setMockParsedData={setMockParsedData}
         mockValidParsedData={mockValidParsedData}
         setMockValidParsedData={setMockValidParsedData}
+
+        
       />
     </div>
   );

@@ -7,6 +7,8 @@ import REPL from "./repl/components/REPL";
 // (for instance, /src/private/api_key.tsx)
 // import {API_KEY} from "./private/api_key"
 
+
+// filterOverlay is my shared state of data. 
 function App() {
   const [filterOverlay, setFilterOverlay] = useState<
     GeoJSON.FeatureCollection | undefined
@@ -17,7 +19,7 @@ function App() {
       <div className="container">
         <div className="component">
           <h1 className="header">Maps</h1>
-          <WrappedMap filterOverlay={filterOverlay} />
+          <WrappedMap filterOverlay={filterOverlay} setFilterOverlay={setFilterOverlay} />
         </div>
         <div className="component">
           <h1 className="header">REPL</h1>

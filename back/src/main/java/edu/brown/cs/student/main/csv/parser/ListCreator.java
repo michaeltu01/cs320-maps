@@ -4,9 +4,7 @@ import edu.brown.cs.student.main.csv.exceptions.FactoryFailureException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implements CreatorFromRow to create Lists of Strings
- */
+/** Implements CreatorFromRow to create Lists of Strings */
 public class ListCreator implements CreatorFromRow<List<String>> {
 
   /**

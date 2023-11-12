@@ -10,6 +10,7 @@ import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class BBoxCache {
   private final LoadingCache<BoundaryBox, BBoxCacheResponse> cache;

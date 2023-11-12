@@ -17,22 +17,21 @@ import { overlayData } from "./overlays";
 import { geoLayer, filterLayer } from "./overlays";
 import { useRef } from "react";
 import { mockFilterOverlay } from "./geodata/mockVariables";
-import { GeoJSON } from 'geojson';
+import { GeoJSON } from "geojson";
 import { Dispatch, SetStateAction } from "react";
-
 
 interface WrappedMapProps {
   filterOverlay: GeoJSON.FeatureCollection | undefined;
   setFilterOverlay: Dispatch<
     SetStateAction<GeoJSON.FeatureCollection | undefined>
-  >;}
+  >;
+}
 
-
-  /**
-   * creates our wrapped map componenet
-   * @param props 
-   * @returns 
-   */
+/**
+ * creates our wrapped map componenet
+ * @param props
+ * @returns
+ */
 function WrappedMap(props: WrappedMapProps) {
   const mapRef = useRef<MapRef>(null);
 

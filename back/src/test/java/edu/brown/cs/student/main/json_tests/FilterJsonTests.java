@@ -4,16 +4,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
-import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
 import edu.brown.cs.student.main.server.handlers.json_handlers.FilterJsonHandler;
 
+import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
+import edu.brown.cs.student.main.server.json_classes.Feature;
+import edu.brown.cs.student.main.server.server_responses.ServerFailureResponse;
+import edu.brown.cs.student.main.server.server_responses.SuccessGeoJsonResponse;
+import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import okio.Buffer;
@@ -27,8 +28,8 @@ import spark.Spark;
 
 public class FilterJsonTests {
     private Moshi moshi;
-    private JsonAdapter<Map<String, Object>> adapter;
-    private Map<String, Object> responseMap;
+    private JsonAdapter<SuccessGeoJsonResponse> successAdapter;
+    private JsonAdapter<ServerFailureResponse> failureAdapter;
   /** Sets up the port. */
   @BeforeAll
   public static void setupOnce() {
@@ -44,16 +45,16 @@ public class FilterJsonTests {
    * @throws DatasourceException
    */
   @BeforeEach
-  public void setup() throws DatasourceException {
+  public void setup() throws DatasourceException, IOException {
     // In fact, restart the entire Spark server for every test!
-
+    Spark.get("/loadjson", new LoadJsonHandler());
     Spark.get("/filterjson", new FilterJsonHandler());
     Spark.init();
     Spark.awaitInitialization(); // don't continue until the server is listening
 
     moshi = new Moshi.Builder().build();
-    adapter = moshi.adapter(Types.newParameterizedType(Map.class, String.class, Object.class));
-    responseMap = new HashMap<String, Object>();
+    successAdapter = moshi.adapter(SuccessGeoJsonResponse.class);
+    failureAdapter = moshi.adapter(ServerFailureResponse.class);
   }
 
   @AfterAll
@@ -66,6 +67,7 @@ public class FilterJsonTests {
   @AfterEach
   public void tearDown() {
     // Gracefully stop Spark listening on both endpoints
+    Spark.unmap("/loadjson");
     Spark.unmap("/filterjson");
     Spark.awaitStop(); // don't proceed until the server is stopped
   }
@@ -94,23 +96,182 @@ public class FilterJsonTests {
   // Tests!! /////
   ////////////////
 
-// tests that a filter json works
-@Test
-public void testWorkingFilter() throws IOException {
-  HttpURLConnection clientConnection =
-      tryRequest("filterjson?minlong=-71.37&minlat=41&maxlong=-71&maxlat=42");
-  assertEquals(200, clientConnection.getResponseCode());
-
-  Map<String, Object> body =
-      adapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
-
-    // check json response
-    responseMap.put("type", "success");
+  // tests that a filter json works
+  @Test
+  public void testWorkingFilter() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson");
+    assertEquals(200, clientConnection.getResponseCode());
 
     // http://localhost:3232/filterjson?minlong=-71.37&minlat=41.7&maxlong=-71&maxlat=41.88
+    clientConnection =
+        tryRequest("filterjson?minlong=-71.37&minlat=41&maxlong=-71&maxlat=42");
+    assertEquals(200, clientConnection.getResponseCode());
 
-}
+    SuccessGeoJsonResponse body =
+        successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
+      // check json response
+    assertEquals(body.type(), "success");
+
+    Feature singleResult = body.result().features().get(0);
+    assertEquals(singleResult.type(), "Feature");
+    assertEquals(singleResult.geometry().type(), "MultiPolygon");
+    assertTrue(singleResult.geometry().coordinates() != null);
+    assertEquals(singleResult.properties().state(), "RI");
+    assertEquals(singleResult.properties().city(), "Pawtucket & Central Falls");
+  }
+
+  @Test
+  public void testEmptyFilter() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-71.37&minlat=-71.37&maxlong=-71&maxlat=-71");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    SuccessGeoJsonResponse body =
+        successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    assertEquals(body.type(), "success");
+    assertTrue(body.result().features().isEmpty());
+  }
+
+  @Test
+  public void testNoFileLoaded() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("filterjson?minlong=-71.37&minlat=-71.37&maxlong=-71&maxlat=-71");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    ServerFailureResponse body =
+        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    assertEquals(body.type(), "error");
+    assertEquals(body.error_type(), "error_datasource");
+    assertEquals(body.details(), "edu.brown.cs.student.main.server.exceptions.DatasourceException: No file loaded");
+  }
+
+  @Test
+  public void testMissingParameters() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
+        tryRequest("filterjson?minlat=-71.37&maxlong=-71&maxlat=-71");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    ServerFailureResponse body =
+        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    assertEquals(body.type(), "error");
+    assertEquals(body.error_type(), "error_bad_request");
+    assertEquals(body.details(),
+        "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-100&maxlong=-71&maxlat=-71");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    body =
+        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    assertEquals(body.type(), "error");
+    assertEquals(body.error_type(), "error_bad_request");
+    assertEquals(body.details(),
+        "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-100&minlat=-71.37&maxlat=-71");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    body =
+        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    assertEquals(body.type(), "error");
+    assertEquals(body.error_type(), "error_bad_request");
+    assertEquals(body.details(),
+        "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-100&minlat=-71.37&maxlat=-71");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    body =
+        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    assertEquals(body.type(), "error");
+    assertEquals(body.error_type(), "error_bad_request");
+    assertEquals(body.details(),
+        "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
+  }
+
+  @Test
+  public void testBadParameters() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
+        tryRequest("filterjson?minlong=100&minlat=-71.37&maxlong=-71&maxlat=-71");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    ServerFailureResponse body =
+        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    assertEquals(body.type(), "error");
+    assertEquals(body.error_type(), "error_bad_request");
+    assertEquals(body.details(), "'minlong' parameter needs to be less than or equal to 'maxlong' parameter");
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-100&minlat=100&maxlong=-71&maxlat=-71.37");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    body =
+        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    // check json response
+    assertEquals(body.type(), "error");
+    assertEquals(body.error_type(), "error_bad_request");
+    assertEquals(body.details(), "'minlat' parameter needs to be less than or equal to 'maxlat' parameter");
+  }
+
+  @Test
+  public void testCaching() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-87&maxlong=-86&minlat=33&maxlat=34");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    SuccessGeoJsonResponse body = successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    String dateTime = body.date_time();
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-30&maxlong=0&minlat=20&maxlat=40");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection = tryRequest("filterjson?minlong=0&maxlong=40&minlat=-40&maxlat=0");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-87&maxlong=-86&minlat=33&maxlat=34");
+    assertEquals(200, clientConnection.getResponseCode());
+    body = successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    assertEquals(dateTime, body.date_time());
+  }
 
 
 }

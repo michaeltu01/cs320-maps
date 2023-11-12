@@ -8,6 +8,7 @@ import edu.brown.cs.student.main.server.Server;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -31,7 +32,8 @@ public class LoadJsonHandler implements Route {
 
     try {
       if (filepath == null) {
-        filepath = "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json"; // made this absolute for tests
+//        filepath = "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json"; // made this absolute for tests
+        filepath = "C:\\Code\\CS320\\maps-iyi3-mstu\\back\\data\\geodata\\fullDownload.json";
         Server.setSharedJson(parseJson(filepath));
       } else {
         Server.setSharedJson(parseJson(filepath));
@@ -56,11 +58,12 @@ public class LoadJsonHandler implements Route {
       BufferedSource source = Okio.buffer(Okio.source(new File(filePath)));
       json = adapter.fromJson(source);
       source.close();
+    } catch(FileNotFoundException e) {
+      throw new DatasourceException("Invalid file path: " + filePath);
     } catch (IOException e) {
       throw new DatasourceException(e.getMessage(), e.getCause());
     } catch (JsonDataException e) {
-      System.err.println(e.getMessage());
-      throw e;
+      throw new DatasourceException("Your file is not a GeoJson. Please check that your JSON matches the structure of a GeoJson.", e.getCause());
     }
 
     if (json == null || json.features() == null || json.type() == null) {

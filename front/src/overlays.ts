@@ -25,7 +25,7 @@ export async function overlayData(): Promise<
   )
     .then((response) => response.json())
     .then((responseJson) => {
-      rl_data = responseJson.geojson;
+      rl_data = responseJson.result;
     });
 
   return isFeatureCollection(rl_data) ? rl_data : undefined;

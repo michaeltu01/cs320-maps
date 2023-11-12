@@ -10,6 +10,8 @@ import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import edu.brown.cs.student.main.server.json_classes.BBoxCacheResponse;
 import edu.brown.cs.student.main.server.json_classes.BoundaryBox;
 import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
+import edu.brown.cs.student.main.server.server_responses.ServerFailureResponse;
+import edu.brown.cs.student.main.server.server_responses.SuccessGeoJsonResponse;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,35 +23,50 @@ import spark.Route;
 
 public class FilterJsonHandler implements Route {
 
-  private final FeatureCollection json;
   private BBoxCache cache;
 
   public FilterJsonHandler() {
-    this.json = Server.getSharedJson();
     this.cache = new BBoxCache(10, 10);
   }
 
   @Override
   public Object handle(Request request, Response response) {
 
-    // format: /loadjso?minlong=_&minlat=_&maxlong=_&maxlat
-    Double minLong = Double.parseDouble(request.queryParams("minlong")); // expects a Double
-    Double minLat = Double.parseDouble(request.queryParams("minlat")); // expects a Double
-    Double maxLong = Double.parseDouble(request.queryParams("maxlong")); // expects a Double
-    Double maxLat = Double.parseDouble(request.queryParams("maxlat")); // expects a Double
-
     Moshi moshi = new Moshi.Builder().build();
-    Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
-    JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
+    JsonAdapter<SuccessGeoJsonResponse> successAdapter = moshi.adapter(SuccessGeoJsonResponse.class);
+    JsonAdapter<ServerFailureResponse> failureAdapter = moshi.adapter(ServerFailureResponse.class);
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
+      // format: /loadjso?minlong=_&minlat=_&maxlong=_&maxlat
+      String minLongStr = request.queryParams("minlong");
+      String minLatStr = request.queryParams("minlat");
+      String maxLongStr = request.queryParams("maxlong");
+      String maxLatStr = request.queryParams("maxlat");
+
       // Check for null parameters
-      ArrayList<Double> params = new ArrayList<Double>(List.of(minLong, minLat, maxLong, maxLat));
+      ArrayList<String> params = new ArrayList<String>();
+      params.add(minLongStr);
+      params.add(minLatStr);
+      params.add(maxLatStr);
+      params.add(maxLongStr);
+
       boolean allParamsNonNull = params.stream().allMatch(param -> param != null);
       if (!allParamsNonNull) {
-        throw new BadRequestException(
+        throw new BadRequestException (
             "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
+      }
+
+      Double minLong = Double.parseDouble(minLongStr); // expects a Double
+      Double minLat = Double.parseDouble(minLatStr); // expects a Double
+      Double maxLong = Double.parseDouble(maxLongStr); // expects a Double
+      Double maxLat = Double.parseDouble(maxLatStr); // expects a Double
+
+      if (minLong > maxLong) {
+        throw new BadRequestException("'minlong' parameter needs to be less than or equal to 'maxlong' parameter");
+      }
+      if (minLat > maxLat) {
+        throw new BadRequestException("'minlat' parameter needs to be less than or equal to 'maxlat' parameter");
       }
 
       // Filter JSON for areas with coordinates that all fall within the specified "boundary box"
@@ -58,62 +75,14 @@ public class FilterJsonHandler implements Route {
       FeatureCollection filteredJson = cacheResponse.filteredJSON();
       String dateTime = cacheResponse.dateTime();
 
-      responseMap.put("type", "success");
-      responseMap.put("geojson", filteredJson);
-      responseMap.put("date/time", dateTime);
-      return adapter.toJson(responseMap);
+      return successAdapter.toJson(new SuccessGeoJsonResponse("success", filteredJson, dateTime));
+    } catch (NumberFormatException e) {
+      return failureAdapter.toJson(new ServerFailureResponse("error", "error_datasource", "Parameter must be a double"));
     } catch (BadRequestException e) {
-      responseMap.put("type", "error");
-      responseMap.put("error_type", "error_bad_request");
-      responseMap.put("details", e.getMessage());
-      return adapter.toJson(responseMap);
+      return failureAdapter.toJson(new ServerFailureResponse("error", "error_bad_request", e.getMessage()));
     } catch (DatasourceException e) {
-      responseMap.put("type", "error");
-      responseMap.put("error_type", "error_datasource");
-      responseMap.put("details", e.getMessage());
       System.err.println(e.getCause());
-      return adapter.toJson(responseMap);
+      return failureAdapter.toJson(new ServerFailureResponse("error", "error_datasource", e.getMessage()));
     }
   }
-
-  // private FeatureCollection filterByBoundaryBox(FeatureCollection json, BoundaryBox bbox) throws
-  // DatasourceException {
-  //     ArrayList<Feature> filteredFeatures = new ArrayList<Feature>();
-
-  //     List<Feature> featureCollection = json.features();
-  //     if (featureCollection == null) {
-  //         throw new DatasourceException("Feature collection is null.");
-  //     }
-  //     try {
-  //         for (Feature feature : featureCollection) {
-  //             if (feature.geometry() != null) {
-  //                 List<List<List<List<Double>>>> coordinatesProperty =
-  // feature.geometry().coordinates();
-  //                 if (coordinatesProperty != null) {
-  //                     if (allLieInBoundaryBox(coordinatesProperty, bbox)) {
-  //                         filteredFeatures.add(feature);
-  //                     }
-  //                 }
-  //             }
-  //         }
-  //         return new FeatureCollection(json.type(), filteredFeatures);
-  //     } catch (Exception e) {
-  //         System.err.println(e.getMessage());
-  //         throw e;
-  //     }
-  // }
-
-  // private boolean allLieInBoundaryBox(List<List<List<List<Double>>>> coordinatesList4D,
-  // BoundaryBox bbox) {
-  //     for (List<List<List<Double>>> coordinatesList3D : coordinatesList4D) {
-  //         for (List<List<Double>> coordinatesList2D : coordinatesList3D) {
-  //             for (List<Double> coordinate : coordinatesList2D) {
-  //                 if (!bbox.contains(coordinate)) {
-  //                     return false;
-  //                 }
-  //             }
-  //         }
-  //     }
-  //     return true;
-  // }
 }

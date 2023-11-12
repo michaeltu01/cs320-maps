@@ -38,11 +38,10 @@ interface REPLInputProps {
   setMockValidParsedData: Dispatch<SetStateAction<boolean>>;
 }
 
-
 /**
  * handles inputs to our repl front end component
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 export function REPLInput(props: REPLInputProps) {
   //store the entire inputted command
@@ -95,18 +94,18 @@ export function REPLInput(props: REPLInputProps) {
           props.mockParsedData,
           props.setMockParsedData,
           props.mockValidParsedData,
-          props.setMockValidParsedData
+          props.setMockValidParsedData,
+          props.setFilterOverlay
         );
       } else if (command === "search_json") {
         // console.log(parameters);
         output = await searchJson(parameters, props.setFilterOverlay);
         if (strings[1] === null) {
-          output = [["Missing Search Parameter"]]
+          output = [["Missing Search Parameter"]];
         }
       } else if (command === "load_json") {
         output = await loadJson(parameters);
-      }
-      else {
+      } else {
         let func = props.commandMap.get(command);
         if (func != undefined) {
           //through narrowing, now func is guaranteed to be a valid REPLFunction
@@ -207,7 +206,11 @@ export function REPLInput(props: REPLInputProps) {
         To submit your command, press the ENTER key or tab to the submit button
         and click.
       </div>
-      <button aria-label="button" onClick={() => handleSubmit(commandString)} tabIndex={1}>
+      <button
+        aria-label="button"
+        onClick={() => handleSubmit(commandString)}
+        tabIndex={1}
+      >
         Submitted {count} times
       </button>
     </div>

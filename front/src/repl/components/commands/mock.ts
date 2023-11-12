@@ -3,6 +3,7 @@ import { MockLoadCSV } from "./REPLLoad";
 import { MockREPLSearchNoCol, MockREPLSearchWithCol } from "./REPLSearch";
 import { mockView } from "./view";
 import { MockBroadband } from "./broadband";
+import { mockFilterOverlay } from "../../../geodata/mockVariables";
 
 /**
  *
@@ -19,7 +20,10 @@ export function mock(
   parsedData: string[][],
   setParsedData: Dispatch<SetStateAction<string[][]>>,
   validParsedData: boolean,
-  setValidParsedData: Dispatch<SetStateAction<boolean>>
+  setValidParsedData: Dispatch<SetStateAction<boolean>>,
+  setFilterOverlay: Dispatch<
+    SetStateAction<GeoJSON.FeatureCollection | undefined>
+  >
 ) {
   //command is the second parameter because first one is mock
   let command = parameters[1];
@@ -56,6 +60,10 @@ export function mock(
     }
     //parameters = state, county
     return MockBroadband(parameters[2], parameters[3]);
+  } else if (command === "search_json") {
+    setFilterOverlay(mockFilterOverlay);
+    return [["Searched for: Mountain Brook Estates and County Club Gardens"]];
+  } else {
+    return [["Invalid mock command given"]];
   }
-  return [["Invalid mock command given"]];
 }

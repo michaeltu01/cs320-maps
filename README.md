@@ -44,3 +44,22 @@ No errors/bugs that we know of.
 4. json commands are load_json {[filepath]} or search_json{[keyword]}
 5. click on the map to see a display of the state, city, holc grade, broadband percentage, and name
 6. Tests: Run the playwright tests with the command npx playwright test
+
+
+# Reflection
+
+1. Guava
+2. Moshi
+3. Junit
+4. Playwright
+5. Spark
+6. Maven
+7. Screenreader
+8. React
+9. Vite
+10. NodeJS
+11. MapBox
+12. Jest
+13. Java
+14. HTML
+15. CSS

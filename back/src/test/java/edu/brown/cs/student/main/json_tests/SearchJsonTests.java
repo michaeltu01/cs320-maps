@@ -131,10 +131,13 @@ public class SearchJsonTests {
     // Load JSON before the search
     HttpURLConnection clientConnection = tryRequest("loadjson");
     assertEquals(200, clientConnection.getResponseCode());
+    SuccessGeoJsonResponse body2 =
+            successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    assertEquals("success", body2.type());
 
     clientConnection =
         tryRequest("searchjson?search=adjacent%20to%20Central%20Park-%20good%20transportation");
-    // assertEquals(200, clientConnection.getResponseCode());
+    assertEquals(200, clientConnection.getResponseCode());
 
     SuccessGeoJsonResponse body =
         successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));

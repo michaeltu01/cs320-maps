@@ -26,7 +26,7 @@ test('testing that the incorrect file path produces the error message', async ({
     await page.getByLabel('Command input').click();
     await page.getByLabel('Command input').fill('load_json {asdfasdfasdf}');
     await page.getByLabel('button').click()
-    await expect(page.getByLabel('output')).toContainText('error- asdfasdfasdf (No such file or directory)');
+    await expect(page.getByLabel('output')).toContainText('error- Invalid file path: asdfasdfasdf');
 })
 
 // test that we can load two things in a row

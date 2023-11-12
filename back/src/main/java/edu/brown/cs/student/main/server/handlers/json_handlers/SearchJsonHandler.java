@@ -42,7 +42,6 @@ public class SearchJsonHandler implements Route {
     try {
       // format: /searchjson?search=_
       String searchVal = request.queryParams("search");
-
       this.json = Server.getSharedJson();
 
       if (this.json == null) {
@@ -53,6 +52,9 @@ public class SearchJsonHandler implements Route {
       }
 
       List<Feature> searches = areaQuery(searchVal);
+      if (searches == null || searches.isEmpty()) {
+        throw new BadJsonException("No areas found with the given keyword: " + searchVal);
+      }
       FeatureCollection featureCollection = new FeatureCollection("FeatureCollection", searches);
 
       return successAdapter.toJson(new SuccessGeoJsonResponse("success", featureCollection, null));

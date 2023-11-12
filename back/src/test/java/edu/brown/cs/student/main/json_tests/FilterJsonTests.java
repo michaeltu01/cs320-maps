@@ -158,6 +158,10 @@ public class FilterJsonTests {
   @Test
   public void testMissingParameters() throws Exception {
     HttpURLConnection clientConnection =
+        tryRequest("loadjson");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
         tryRequest("filterjson?minlat=-71.37&maxlong=-71&maxlat=-71");
     assertEquals(200, clientConnection.getResponseCode());
 
@@ -213,6 +217,10 @@ public class FilterJsonTests {
   @Test
   public void testBadParameters() throws Exception {
     HttpURLConnection clientConnection =
+        tryRequest("loadjson");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
         tryRequest("filterjson?minlong=100&minlat=-71.37&maxlong=-71&maxlat=-71");
     assertEquals(200, clientConnection.getResponseCode());
 

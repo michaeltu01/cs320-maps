@@ -245,5 +245,33 @@ public class FilterJsonTests {
     assertEquals(body.details(), "'minlat' parameter needs to be less than or equal to 'maxlat' parameter");
   }
 
+  @Test
+  public void testCaching() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-87&maxlong=-86&minlat=33&maxlat=34");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    SuccessGeoJsonResponse body = successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    String dateTime = body.date_time();
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-30&maxlong=0&minlat=20&maxlat=40");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection = tryRequest("filterjson?minlong=0&maxlong=40&minlat=-40&maxlat=0");
+    assertEquals(200, clientConnection.getResponseCode());
+
+    clientConnection =
+        tryRequest("filterjson?minlong=-87&maxlong=-86&minlat=33&maxlat=34");
+    assertEquals(200, clientConnection.getResponseCode());
+    body = successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+
+    assertEquals(dateTime, body.date_time());
+  }
+
 
 }

@@ -39,4 +39,8 @@ No errors/bugs that we know of.
 # How to Run
 
 1. Make sure that both the backend server and the front end server are running
-2. 
+2. In the front end, we can enter commands in the command box
+3. Commands for CSV are load {[filepath]}, view, search (column {optional}) (targetString)
+4. json commands are load_json {[filepath]} or search_json{[keyword]}
+5. click on the map to see a display of the state, city, holc grade, broadband percentage, and name
+6. Tests: Run the playwright tests with the command npx playwright test

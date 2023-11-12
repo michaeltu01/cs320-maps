@@ -521,7 +521,7 @@ test('bad load json, then a good load csv, then a regular search', async ({ page
   await page.getByLabel('Command input').click();
   await page.getByLabel('Command input').fill('load_json {asdfasdfasdf}');
   await page.getByLabel('button').click()
-  await expect(page.getByLabel('output')).toContainText('error- asdfasdfasdf (No such file or directory)');
+  await expect(page.getByLabel('output')).toContainText('error- Invalid file path: asdfasdfasdf');
 
   // good load csv
   await page.getByLabel("Command input").click();

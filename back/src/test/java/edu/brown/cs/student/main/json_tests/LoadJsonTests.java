@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import com.sun.net.httpserver.Authenticator.Success;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import edu.brown.cs.student.main.server.handlers.json_handlers.FilterJsonHandler;
 import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
@@ -17,7 +16,6 @@ import edu.brown.cs.student.main.server.server_responses.SuccessGeoJsonResponse;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,8 +115,11 @@ public class LoadJsonTests {
 
     // check json response
 
-//    responseMap.put("filepath", "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json");
-    responseMap.put("filepath", "C:\\Code\\CS320\\maps-iyi3-mstu\\back\\data\\geodata\\fullDownload.json");
+    //    responseMap.put("filepath",
+    // "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json");
+    responseMap.put(
+        "filepath",
+        "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json");
     responseMap.put("type", "success");
     responseMap.put("details", "file loaded successfully");
     System.out.println(body);
@@ -128,7 +129,8 @@ public class LoadJsonTests {
 
   @Test
   public void testLoadingAnotherJson() throws Exception {
-    HttpURLConnection clientConnection = tryRequest("loadjson?filepath=src/test/java/edu/brown/cs/student/jsons/exampleGeoJson.txt");
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson?filepath=src/test/java/edu/brown/cs/student/jsons/exampleGeoJson.txt");
     assertEquals(200, clientConnection.getResponseCode());
 
     Map<String, Object> body =
@@ -162,7 +164,8 @@ public class LoadJsonTests {
 
   @Test
   public void testInvalidJsonFormat() throws Exception {
-    HttpURLConnection clientConnection = tryRequest("loadjson?filepath=src/test/java/edu/brown/cs/student/jsons/json2.txt");
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson?filepath=src/test/java/edu/brown/cs/student/jsons/json2.txt");
     assertEquals(200, clientConnection.getResponseCode());
 
     Map<String, Object> body =
@@ -171,7 +174,9 @@ public class LoadJsonTests {
     // check json response
     responseMap.put("type", "error");
     responseMap.put("error_type", "error_datasource");
-    responseMap.put("details", "Your file is not a GeoJson. Please check that your JSON matches the structure of a GeoJson.");
+    responseMap.put(
+        "details",
+        "Your file is not a GeoJson. Please check that your JSON matches the structure of a GeoJson.");
     System.out.println(body);
 
     assertEquals(responseMap, body);
@@ -179,7 +184,8 @@ public class LoadJsonTests {
 
   @Test
   public void testFileContentsLoadedCorrectly() throws Exception {
-    HttpURLConnection clientConnection = tryRequest("loadjson?filepath=src/test/java/edu/brown/cs/student/jsons/exampleGeoJson.txt");
+    HttpURLConnection clientConnection =
+        tryRequest("loadjson?filepath=src/test/java/edu/brown/cs/student/jsons/exampleGeoJson.txt");
     assertEquals(200, clientConnection.getResponseCode());
 
     Map<String, Object> body =
@@ -187,7 +193,8 @@ public class LoadJsonTests {
 
     // check json response
 
-//    responseMap.put("filepath", "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json");
+    //    responseMap.put("filepath",
+    // "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/geodata/fullDownload.json");
     responseMap.put("filepath", "src/test/java/edu/brown/cs/student/jsons/exampleGeoJson.txt");
     responseMap.put("type", "success");
     responseMap.put("details", "file loaded successfully");
@@ -199,14 +206,17 @@ public class LoadJsonTests {
     clientConnection = tryRequest("filterjson?minlong=-180&maxlong=180&minlat=-90&maxlat=90");
     assertEquals(200, clientConnection.getResponseCode());
 
-    SuccessGeoJsonResponse body1 = jsonAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
-    FeatureProperties properties = new FeatureProperties(null, null, "Dinagat Islands", null, null, null, null);
+    SuccessGeoJsonResponse body1 =
+        jsonAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    FeatureProperties properties =
+        new FeatureProperties(null, null, "Dinagat Islands", null, null, null, null);
     List<List<Double>> coordinates = new ArrayList<List<Double>>(List.of(List.of(125.6, 10.1)));
     List<List<List<Double>>> coordinates3D = new ArrayList<>(List.of(coordinates));
     List<List<List<List<Double>>>> coordinates4D = new ArrayList<>(List.of(coordinates3D));
     Geometry point = new Geometry("Point", coordinates4D);
     Feature feature = new Feature("Feature", point, properties);
-    FeatureCollection featureCollection = new FeatureCollection("FeatureCollection", new ArrayList<Feature>(List.of(feature)));
+    FeatureCollection featureCollection =
+        new FeatureCollection("FeatureCollection", new ArrayList<Feature>(List.of(feature)));
 
     assertEquals(body1.type(), "success");
     assertEquals(body1.result(), featureCollection);

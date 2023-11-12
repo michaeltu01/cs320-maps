@@ -32,7 +32,7 @@ public class CSVParserTest {
 
   // Files
   private static final String tenStar =
-      "C:\\Code\\CS320\\csv-michaeltu01\\data\\stars\\ten-star.csv";
+      "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/stars/ten-star.csv";
   private static final String strCSV =
       "1998,  27,    9991\n"
           + "1997,  17,    9925\n"

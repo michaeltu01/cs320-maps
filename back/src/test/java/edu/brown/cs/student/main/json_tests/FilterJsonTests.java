@@ -6,12 +6,10 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import edu.brown.cs.student.main.server.handlers.json_handlers.FilterJsonHandler;
-
 import edu.brown.cs.student.main.server.handlers.json_handlers.LoadJsonHandler;
 import edu.brown.cs.student.main.server.json_classes.Feature;
 import edu.brown.cs.student.main.server.server_responses.ServerFailureResponse;
 import edu.brown.cs.student.main.server.server_responses.SuccessGeoJsonResponse;
-import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,11 +23,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spark.Spark;
 
-
 public class FilterJsonTests {
-    private Moshi moshi;
-    private JsonAdapter<SuccessGeoJsonResponse> successAdapter;
-    private JsonAdapter<ServerFailureResponse> failureAdapter;
+  private Moshi moshi;
+  private JsonAdapter<SuccessGeoJsonResponse> successAdapter;
+  private JsonAdapter<ServerFailureResponse> failureAdapter;
   /** Sets up the port. */
   @BeforeAll
   public static void setupOnce() {
@@ -99,19 +96,17 @@ public class FilterJsonTests {
   // tests that a filter json works
   @Test
   public void testWorkingFilter() throws Exception {
-    HttpURLConnection clientConnection =
-        tryRequest("loadjson");
+    HttpURLConnection clientConnection = tryRequest("loadjson");
     assertEquals(200, clientConnection.getResponseCode());
 
     // http://localhost:3232/filterjson?minlong=-71.37&minlat=41.7&maxlong=-71&maxlat=41.88
-    clientConnection =
-        tryRequest("filterjson?minlong=-71.37&minlat=41&maxlong=-71&maxlat=42");
+    clientConnection = tryRequest("filterjson?minlong=-71.37&minlat=41&maxlong=-71&maxlat=42");
     assertEquals(200, clientConnection.getResponseCode());
 
     SuccessGeoJsonResponse body =
         successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
-      // check json response
+    // check json response
     assertEquals(body.type(), "success");
 
     Feature singleResult = body.result().features().get(0);
@@ -124,12 +119,10 @@ public class FilterJsonTests {
 
   @Test
   public void testEmptyFilter() throws Exception {
-    HttpURLConnection clientConnection =
-        tryRequest("loadjson");
+    HttpURLConnection clientConnection = tryRequest("loadjson");
     assertEquals(200, clientConnection.getResponseCode());
 
-    clientConnection =
-        tryRequest("filterjson?minlong=-71.37&minlat=-71.37&maxlong=-71&maxlat=-71");
+    clientConnection = tryRequest("filterjson?minlong=-71.37&minlat=-71.37&maxlong=-71&maxlat=-71");
     assertEquals(200, clientConnection.getResponseCode());
 
     SuccessGeoJsonResponse body =
@@ -152,17 +145,17 @@ public class FilterJsonTests {
     // check json response
     assertEquals(body.type(), "error");
     assertEquals(body.error_type(), "error_datasource");
-    assertEquals(body.details(), "edu.brown.cs.student.main.server.exceptions.DatasourceException: No file loaded");
+    assertEquals(
+        body.details(),
+        "edu.brown.cs.student.main.server.exceptions.DatasourceException: No file loaded");
   }
 
   @Test
   public void testMissingParameters() throws Exception {
-    HttpURLConnection clientConnection =
-        tryRequest("loadjson");
+    HttpURLConnection clientConnection = tryRequest("loadjson");
     assertEquals(200, clientConnection.getResponseCode());
 
-    clientConnection =
-        tryRequest("filterjson?minlat=-71.37&maxlong=-71&maxlat=-71");
+    clientConnection = tryRequest("filterjson?minlat=-71.37&maxlong=-71&maxlat=-71");
     assertEquals(200, clientConnection.getResponseCode());
 
     ServerFailureResponse body =
@@ -171,57 +164,53 @@ public class FilterJsonTests {
     // check json response
     assertEquals(body.type(), "error");
     assertEquals(body.error_type(), "error_bad_request");
-    assertEquals(body.details(),
+    assertEquals(
+        body.details(),
         "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
 
-    clientConnection =
-        tryRequest("filterjson?minlong=-100&maxlong=-71&maxlat=-71");
+    clientConnection = tryRequest("filterjson?minlong=-100&maxlong=-71&maxlat=-71");
     assertEquals(200, clientConnection.getResponseCode());
 
-    body =
-        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    body = failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
     // check json response
     assertEquals(body.type(), "error");
     assertEquals(body.error_type(), "error_bad_request");
-    assertEquals(body.details(),
+    assertEquals(
+        body.details(),
         "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
 
-    clientConnection =
-        tryRequest("filterjson?minlong=-100&minlat=-71.37&maxlat=-71");
+    clientConnection = tryRequest("filterjson?minlong=-100&minlat=-71.37&maxlat=-71");
     assertEquals(200, clientConnection.getResponseCode());
 
-    body =
-        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    body = failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
     // check json response
     assertEquals(body.type(), "error");
     assertEquals(body.error_type(), "error_bad_request");
-    assertEquals(body.details(),
+    assertEquals(
+        body.details(),
         "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
 
-    clientConnection =
-        tryRequest("filterjson?minlong=-100&minlat=-71.37&maxlat=-71");
+    clientConnection = tryRequest("filterjson?minlong=-100&minlat=-71.37&maxlat=-71");
     assertEquals(200, clientConnection.getResponseCode());
 
-    body =
-        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    body = failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
     // check json response
     assertEquals(body.type(), "error");
     assertEquals(body.error_type(), "error_bad_request");
-    assertEquals(body.details(),
+    assertEquals(
+        body.details(),
         "You are missing a parameter(s). Make sure you entered a value for all of the following parameters: minlong, minlat, maxlong, maxlat.");
   }
 
   @Test
   public void testBadParameters() throws Exception {
-    HttpURLConnection clientConnection =
-        tryRequest("loadjson");
+    HttpURLConnection clientConnection = tryRequest("loadjson");
     assertEquals(200, clientConnection.getResponseCode());
 
-    clientConnection =
-        tryRequest("filterjson?minlong=100&minlat=-71.37&maxlong=-71&maxlat=-71");
+    clientConnection = tryRequest("filterjson?minlong=100&minlat=-71.37&maxlong=-71&maxlat=-71");
     assertEquals(200, clientConnection.getResponseCode());
 
     ServerFailureResponse body =
@@ -230,48 +219,44 @@ public class FilterJsonTests {
     // check json response
     assertEquals(body.type(), "error");
     assertEquals(body.error_type(), "error_bad_request");
-    assertEquals(body.details(), "'minlong' parameter needs to be less than or equal to 'maxlong' parameter");
+    assertEquals(
+        body.details(),
+        "'minlong' parameter needs to be less than or equal to 'maxlong' parameter");
 
-    clientConnection =
-        tryRequest("filterjson?minlong=-100&minlat=100&maxlong=-71&maxlat=-71.37");
+    clientConnection = tryRequest("filterjson?minlong=-100&minlat=100&maxlong=-71&maxlat=-71.37");
     assertEquals(200, clientConnection.getResponseCode());
 
-    body =
-        failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    body = failureAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
     // check json response
     assertEquals(body.type(), "error");
     assertEquals(body.error_type(), "error_bad_request");
-    assertEquals(body.details(), "'minlat' parameter needs to be less than or equal to 'maxlat' parameter");
+    assertEquals(
+        body.details(), "'minlat' parameter needs to be less than or equal to 'maxlat' parameter");
   }
 
   @Test
   public void testCaching() throws Exception {
-    HttpURLConnection clientConnection =
-        tryRequest("loadjson");
+    HttpURLConnection clientConnection = tryRequest("loadjson");
     assertEquals(200, clientConnection.getResponseCode());
 
-    clientConnection =
-        tryRequest("filterjson?minlong=-87&maxlong=-86&minlat=33&maxlat=34");
+    clientConnection = tryRequest("filterjson?minlong=-87&maxlong=-86&minlat=33&maxlat=34");
     assertEquals(200, clientConnection.getResponseCode());
 
-    SuccessGeoJsonResponse body = successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
+    SuccessGeoJsonResponse body =
+        successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
     String dateTime = body.date_time();
 
-    clientConnection =
-        tryRequest("filterjson?minlong=-30&maxlong=0&minlat=20&maxlat=40");
+    clientConnection = tryRequest("filterjson?minlong=-30&maxlong=0&minlat=20&maxlat=40");
     assertEquals(200, clientConnection.getResponseCode());
 
     clientConnection = tryRequest("filterjson?minlong=0&maxlong=40&minlat=-40&maxlat=0");
     assertEquals(200, clientConnection.getResponseCode());
 
-    clientConnection =
-        tryRequest("filterjson?minlong=-87&maxlong=-86&minlat=33&maxlat=34");
+    clientConnection = tryRequest("filterjson?minlong=-87&maxlong=-86&minlat=33&maxlat=34");
     assertEquals(200, clientConnection.getResponseCode());
     body = successAdapter.fromJson(new Buffer().readFrom(clientConnection.getInputStream()));
 
     assertEquals(dateTime, body.date_time());
   }
-
-
 }

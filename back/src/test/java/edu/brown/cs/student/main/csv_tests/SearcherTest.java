@@ -12,12 +12,14 @@ import org.junit.jupiter.api.BeforeAll;
 public class SearcherTest {
 
   private static Searcher searchUtil;
-  private final String tenStar = "C:\\Code\\CS320\\csv-michaeltu01\\data\\stars\\ten-star.csv";
+  private final String tenStar =
+      "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/stars/ten-star.csv";
   private final String postSec =
-      "C:\\Code\\CS320\\csv-michaeltu01\\data\\census\\postsecondary_education.csv";
+      "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/census/postsecondary_education.csv";
   private final String doiRI =
-      "C:\\Code\\CS320\\csv-michaeltu01\\data\\census\\dol_ri_earnings_disparity.csv";
-  private final String nonHeader = "C:\\Code\\CS320\\csv-michaeltu01\\data\\test\\non-header.csv";
+      "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/census/dol_ri_earnings_disparity.csv";
+  private final String nonHeader =
+      "/Users/isaacyi/Desktop/CSCI0320/maps-iyi3-mstu/back/data/test/non-header.csv";
 
   @BeforeAll
   public static void setup() {

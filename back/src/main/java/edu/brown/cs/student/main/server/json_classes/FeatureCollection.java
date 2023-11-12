@@ -4,10 +4,6 @@ import edu.brown.cs.student.main.server.exceptions.DatasourceException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.squareup.moshi.Json;
-import java.util.List;
-import java.util.Map;
-
 // public record FeatureCollection(
 //   @Json(name = "type") String type,
 //   @Json(name = "features") List<GeoJsonFeature> features) {
@@ -23,8 +19,6 @@ import java.util.Map;
 
 //       }
 //   }
-
-
 
 public record FeatureCollection(String type, List<Feature> features) {
   public FeatureCollection filterByBoundaryBox(BoundaryBox bbox) throws DatasourceException {

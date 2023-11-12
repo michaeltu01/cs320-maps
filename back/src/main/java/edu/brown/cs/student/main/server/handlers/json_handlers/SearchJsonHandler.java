@@ -2,7 +2,6 @@ package edu.brown.cs.student.main.server.handlers.json_handlers;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.Server;
 import edu.brown.cs.student.main.server.exceptions.BadJsonException;
 import edu.brown.cs.student.main.server.exceptions.BadRequestException;
@@ -12,8 +11,6 @@ import edu.brown.cs.student.main.server.json_classes.FeatureCollection;
 import edu.brown.cs.student.main.server.json_classes.FeatureProperties;
 import edu.brown.cs.student.main.server.server_responses.ServerFailureResponse;
 import edu.brown.cs.student.main.server.server_responses.SuccessGeoJsonResponse;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +32,8 @@ public class SearchJsonHandler implements Route {
   @Override
   public Object handle(Request request, Response response) {
     Moshi moshi = new Moshi.Builder().build();
-    JsonAdapter<SuccessGeoJsonResponse> successAdapter = moshi.adapter(SuccessGeoJsonResponse.class);
+    JsonAdapter<SuccessGeoJsonResponse> successAdapter =
+        moshi.adapter(SuccessGeoJsonResponse.class);
     JsonAdapter<ServerFailureResponse> failureAdapter = moshi.adapter(ServerFailureResponse.class);
     Map<String, Object> responseMap = new HashMap<>();
 
@@ -59,11 +57,14 @@ public class SearchJsonHandler implements Route {
 
       return successAdapter.toJson(new SuccessGeoJsonResponse("success", featureCollection, null));
     } catch (BadRequestException e) {
-      return failureAdapter.toJson(new ServerFailureResponse("error", "error_bad_request", e.getMessage()));
+      return failureAdapter.toJson(
+          new ServerFailureResponse("error", "error_bad_request", e.getMessage()));
     } catch (DatasourceException e) {
-      return failureAdapter.toJson(new ServerFailureResponse("error", "error_datasource", e.getMessage()));
+      return failureAdapter.toJson(
+          new ServerFailureResponse("error", "error_datasource", e.getMessage()));
     } catch (BadJsonException e) {
-      return failureAdapter.toJson(new ServerFailureResponse("error", "error_bad_json", e.getMessage()));
+      return failureAdapter.toJson(
+          new ServerFailureResponse("error", "error_bad_json", e.getMessage()));
     }
   }
 

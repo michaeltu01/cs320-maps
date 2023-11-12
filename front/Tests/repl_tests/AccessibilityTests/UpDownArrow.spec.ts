@@ -2,12 +2,12 @@ import { test, expect } from "@playwright/test";
 
 test.beforeEach("populate the history to test", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // switch mode
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mode");
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   // load a file

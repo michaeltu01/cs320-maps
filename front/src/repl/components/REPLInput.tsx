@@ -9,6 +9,7 @@ import { broadbandRequest } from "./commands/broadband";
 import { REPLFunction } from "./REPL";
 import { mock } from "./commands/mock";
 import { searchJson } from "./commands/searchJson";
+import { loadJson } from "./commands/LoadJson";
 
 //input props
 interface REPLInputProps {
@@ -99,7 +100,13 @@ export function REPLInput(props: REPLInputProps) {
       } else if (command === "search_json") {
         // console.log(parameters);
         output = await searchJson(parameters, props.setFilterOverlay);
-      } else {
+        if (strings[1] === null) {
+          output = [["Missing Search Parameter"]]
+        }
+      } else if (command === "load_json") {
+        output = await loadJson(parameters);
+      }
+      else {
         let func = props.commandMap.get(command);
         if (func != undefined) {
           //through narrowing, now func is guaranteed to be a valid REPLFunction
@@ -200,7 +207,7 @@ export function REPLInput(props: REPLInputProps) {
         To submit your command, press the ENTER key or tab to the submit button
         and click.
       </div>
-      <button onClick={() => handleSubmit(commandString)} tabIndex={1}>
+      <button aria-label="button" onClick={() => handleSubmit(commandString)} tabIndex={1}>
         Submitted {count} times
       </button>
     </div>

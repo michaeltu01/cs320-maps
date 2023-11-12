@@ -12,13 +12,12 @@ import { test, expect } from "@playwright/test";
 test("after typing search command without loading a file, the error output is printed", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //search without loading
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {search}{name}{isaac yi}");
-  const button = await page.locator("button");
-  await button.click();
+  await page.getByLabel('button').click()
 
   //check error output
   const isTextPresent = await page.textContent(
@@ -32,7 +31,7 @@ test("after typing search command without loading a file, the error output is pr
 test("after typing search command with wrong number of inputs, the error output is printed", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -41,7 +40,7 @@ test("after typing search command with wrong number of inputs, the error output 
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the illformed search
@@ -65,7 +64,7 @@ test("after typing search command with wrong number of inputs, the error output 
 test("after typing search command without correctly formatted inputs, the error output is printed", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -74,7 +73,7 @@ test("after typing search command without correctly formatted inputs, the error 
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the illformed search
@@ -100,7 +99,7 @@ test("after typing search command without correctly formatted inputs, the error 
 test("searching for data that doesn't exist in loaded CSV", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -109,7 +108,7 @@ test("searching for data that doesn't exist in loaded CSV", async ({
     .fill("mock {load_file}{emptyCSV.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the search
@@ -130,7 +129,7 @@ test("searching for data that doesn't exist in loaded CSV", async ({
 
 //search for target string that does exist -- no column identifier
 test("searching for valid tuple with no col identifier", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -139,7 +138,7 @@ test("searching for valid tuple with no col identifier", async ({ page }) => {
     .fill("mock {load_file}{mixedCSV.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the search
@@ -163,7 +162,7 @@ test("searching for valid tuple with no col identifier", async ({ page }) => {
 test("searching for multiple rows -- no column identifier", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -172,7 +171,7 @@ test("searching for multiple rows -- no column identifier", async ({
     .fill("mock {load_file}{doubleCSV.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the search
@@ -205,7 +204,7 @@ test("searching for multiple rows -- no column identifier", async ({
 test("searching for valid tuple, but isn't in the column given by index col identifier", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -214,7 +213,7 @@ test("searching for valid tuple, but isn't in the column given by index col iden
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the search
@@ -238,7 +237,7 @@ test("searching for valid tuple, but isn't in the column given by index col iden
 test("searching for valid tuple with valid col index identifier", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -247,7 +246,7 @@ test("searching for valid tuple with valid col index identifier", async ({
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the search
@@ -277,7 +276,7 @@ test("searching for valid tuple with valid col index identifier", async ({
 test("searching for valid tuple, but isn't in the column given by index name identifier", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -286,7 +285,7 @@ test("searching for valid tuple, but isn't in the column given by index name ide
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the search
@@ -310,7 +309,7 @@ test("searching for valid tuple, but isn't in the column given by index name ide
 test("searching for valid tuple with valid col name identifier", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -319,7 +318,7 @@ test("searching for valid tuple with valid col name identifier", async ({
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the search
@@ -345,7 +344,7 @@ test("searching for valid tuple with valid col name identifier", async ({
 test("searching for multiple rows with valid column name identifier", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   //load successfully
   await page.getByLabel("Command input").click();
@@ -354,7 +353,7 @@ test("searching for multiple rows with valid column name identifier", async ({
     .fill("mock {load_file}{doubleCSV.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   //do the search

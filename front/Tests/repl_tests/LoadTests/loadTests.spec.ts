@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("after I type into the input box, its text changes", async ({ page }) => {
   // Step 1: Navigate to a URL
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // Step 2: Interact with the page
   // Locate the element you are looking for
@@ -20,7 +20,7 @@ test("after I load a correct file into the input box, the correct output is prin
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load good file
   await page.getByLabel("Command input").click();
@@ -29,7 +29,7 @@ test("after I load a correct file into the input box, the correct output is prin
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const mock_input = "CSV successfully loaded";
@@ -44,7 +44,7 @@ test("after I load an incorrect file into the input box, the error output is pri
   page,
 }) => {
   //go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load a bad csv
   await page.getByLabel("Command input").click();
@@ -53,7 +53,7 @@ test("after I load an incorrect file into the input box, the error output is pri
     .fill("mock {load_file}{selrjkrdfj.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output = await page.textContent(
@@ -72,14 +72,14 @@ test("after I load an empty path into the input box, the error output is printed
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // loading an empty string
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("mock {load_file}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output = await page.textContent(
@@ -96,7 +96,7 @@ test("load one valid CSV then a different valid CSV should print two correct out
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   // load a good file
   await page.getByLabel("Command input").click();
@@ -105,7 +105,7 @@ test("load one valid CSV then a different valid CSV should print two correct out
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   // check output
@@ -134,7 +134,7 @@ test("loading one valid CSV then an invalid CSV should print a success then a er
   page,
 }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   await page.getByLabel("Command input").click();
   await page
@@ -142,7 +142,7 @@ test("loading one valid CSV then an invalid CSV should print a success then a er
     .fill("mock {load_file}{headerCSV.csv}{true}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output1 = "CSV successfully loaded";
@@ -170,7 +170,7 @@ test("loading one invalid CSV then a valid CSV should print an error then a succ
   page,
 }) => {
   // go to apge
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   await page.getByLabel("Command input").click();
   await page
@@ -178,7 +178,7 @@ test("loading one invalid CSV then a valid CSV should print an error then a succ
     .fill("mock {load_file}{sdfadsfa.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output1 = "CSV NOT successfully loaded -- invalid filepath";
@@ -204,7 +204,7 @@ test("loading one invalid CSV then a valid CSV should print an error then a succ
 // test bad load then bad laod
 test("loading two invalid CSVs should print two errors", async ({ page }) => {
   // go to page
-  await page.goto("http://localhost:8000/");
+  await page.goto("http://localhost:5173/");
 
   await page.getByLabel("Command input").click();
   await page
@@ -212,7 +212,7 @@ test("loading two invalid CSVs should print two errors", async ({ page }) => {
     .fill("mock {load_file}{sdfadsfa.csv}{false}");
 
   // Click the button
-  const button = await page.locator("button");
+  const button = await page.getByLabel('button')
   await button.click();
 
   const output1 = "CSV NOT successfully loaded -- invalid filepath";

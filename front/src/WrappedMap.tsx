@@ -59,17 +59,31 @@ function WrappedMap(props: WrappedMapProps) {
     fetchGeoJson();
   }, []);
 
-  function onMapClick(e: MapLayerMouseEvent) {
+  async function onMapClick(e: MapLayerMouseEvent) {
     console.log(e.lngLat.lat);
     console.log(e.lngLat.lng);
 
     // Access the Mapbox component using mapRef
     const map = mapRef.current;
 
+    const fetched = await fetch("https://geo.fcc.gov/api/census/area?lat="+ e.lngLat.lat + "&lon="+e.lngLat.lng + "&censusYear=2020&format=json")
+    const data = await fetched.json();
+    const county = data["results"][0]["county_name"];
+    const state = data["results"][0]["state_name"];
+
+    let hostname = "http://localhost";
+    let port = ":3232";
+    let broadbandQuery = "/broadband?state=" + state + "&county=" + county;
+
+    const fetchedBroad = await fetch(hostname + port + broadbandQuery)
+    const broadData = await fetchedBroad.json();
+    const broadband = broadData["broadband"]
+
     // Create a bounding box around the click point
     const bbox: [PointLike, PointLike] = [
       [e.point.x, e.point.y],
       [e.point.x, e.point.y],
+      
     ];
 
     // Use the mapRef to call queryRenderedFeatures
@@ -90,7 +104,7 @@ function WrappedMap(props: WrappedMapProps) {
       ) {
         setLastLog("No data defined in click region. Try again");
       } else {
-        const logEntry = `state: ${properties.state}, city: ${properties.city}, holc_grade: ${properties.holc_grade} \n name: ${properties.name}`;
+        const logEntry = `state: ${properties.state}, city: ${properties.city}, holc_grade: ${properties.holc_grade} \n name: ${properties.name}, Broadband: ${broadband}`;
         console.log(logEntry);
         setLastLog(logEntry);
       }
